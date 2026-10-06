@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Exams - KBOA Admin</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+    .admin-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .admin-search { flex: 1; min-width: 220px; position: relative; }
+    .admin-search input { width: 100%; padding: 12px 15px 12px 45px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; }
+    .admin-search::before { content: '🔍'; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); }
+    .admin-select { padding: 12px 15px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; cursor: pointer; background: white; }
+    .data-table-card { background: white; border-radius: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .table-scroll { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    .data-table th { background: var(--gray-50); padding: 14px 15px; text-align: left; font-size: 0.8rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
+    .data-table td { padding: 14px 15px; border-bottom: 1px solid var(--gray-100); font-size: 0.92rem; color: var(--gray-700); vertical-align: middle; }
+    .data-table tbody tr:hover { background: var(--gray-50); }
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .user-avatar-sm { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: white; flex-shrink: 0; }
+    .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; text-transform: capitalize; }
+    .action-btns { display: flex; gap: 6px; }
+    .action-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.15s; }
+    .action-btn:hover { background: var(--gray-100); }
+    .action-btn.ok:hover { background: #d1fae5; }
+    .action-btn.danger:hover { background: #fee2e2; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal-content { background: white; border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 20px 25px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 25px; }
+    .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-weight: 600; margin-bottom: 7px; color: var(--gray-700); font-size: 0.92rem; }
+    .form-control { width: 100%; padding: 11px 14px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; font-size: 0.98rem; }
+    .form-control:focus { outline: none; border-color: var(--primary-color); }
+    .stat-card { cursor: default; }
+    .empty-row td { text-align: center; padding: 40px; color: var(--gray-500); }
+</style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Admin</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
+    <nav class="sidebar-nav"><ul>
+        <li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>Students</span></a></li><li><a href="teachers.html" class="sidebar-link"><span class="icon">👨‍🏫</span><span>Teachers</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>Courses</span></a></li><li><a href="payments.html" class="sidebar-link"><span class="icon">💳</span><span>Payments</span></a></li><li><a href="exams.html" class="sidebar-link active"><span class="icon">📝</span><span>Exams</span></a></li><li><a href="certificates.html" class="sidebar-link"><span class="icon">🏆</span><span>Certificates</span></a></li><li><a href="analytics.html" class="sidebar-link"><span class="icon">📈</span><span>Analytics</span></a></li><li><a href="reports.html" class="sidebar-link"><span class="icon">📄</span><span>Reports</span></a></li><li><a href="settings.html" class="sidebar-link"><span class="icon">⚙️</span><span>Settings</span></a></li>
+    </ul></nav>
+    <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Manage Exams</h1></div>
+                <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#ef4444;">A</div><span class="user-name">Admin</span></button></div></div>
+            </header>
+            <div class="content" style="padding-top: 25px;">
+<div class="admin-header-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
+    <div><h2 class="content-title">📝 Manage Exams</h2><p class="content-subtitle">Real results & exam builder</p></div>
+    <button class="btn btn-primary" onclick="document.getElementById('add-modal').classList.add('show')">+ Create Exam</button>
+</div>
+
+<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px;">
+    <div class="stat-card"><div class="stat-icon blue">📝</div><div class="stat-info"><h3 id="e-total">—</h3><p>Exams</p></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><h3 id="e-attempts">—</h3><p>Attempts</p></div></div>
+    <div class="stat-card"><div class="stat-icon orange">📊</div><div class="stat-info"><h3 id="e-passrate">—</h3><p>Pass Rate</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple">🏆</div><div class="stat-info"><h3 id="e-certs">—</h3><p>Certificates Issued</p></div></div>
+</div>
+
+<h3 style="margin-bottom:12px;">📋 Published Exams</h3>
+<div id="exams-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:30px;">
+    <p style="color:var(--gray-500);">⏳ Loading…</p>
+</div>
+
+<h3 style="margin-bottom:12px;">📊 Recent Results</h3>
+<div class="data-table-card"><div class="table-scroll">
+<table class="data-table"><thead><tr>
+    <th>Student</th><th>Exam</th><th>Score</th><th>Result</th><th>Date</th>
+</tr></thead><tbody id="tbody"><tr class="empty-row"><td colspan="5">⏳ Loading…</td></tr></tbody></table>
+</div></div>
+
+<div class="modal-overlay" id="add-modal"><div class="modal-content" style="max-width:680px;">
+    <div class="modal-header"><h2>📝 Create Exam</h2><button class="modal-close" onclick="closeModal('add-modal')">✕</button></div>
+    <div class="modal-body">
+        <div class="form-group"><label class="form-label">Exam Title *</label><input class="form-control" id="x-title" placeholder="e.g., Final Examination — Mathematics"></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+            <div class="form-group"><label class="form-label">Duration (mins)</label><input class="form-control" id="x-dur" type="number" value="60"></div>
+            <div class="form-group"><label class="form-label">Pass Mark (%)</label><input class="form-control" id="x-pass" type="number" value="70"></div>
+            <div class="form-group"><label class="form-label">Course Name</label><input class="form-control" id="x-course" placeholder="Mathematics"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong>Questions (<span id="q-count">0</span>)</strong>
+            <button class="btn btn-outline btn-sm" onclick="addQuestion()">+ Add Question</button>
+        </div>
+        <div id="questions"></div>
+        <button class="btn btn-primary btn-block btn-lg" style="margin-top:16px;" onclick="saveExam()">✅ Publish Exam</button>
+    </div>
+</div></div></div>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="js/admin-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+            var t = document.getElementById('menu-toggle'), c = document.getElementById('sidebar-close');
+            if (t) t.onclick = function() { s.classList.add('show'); o.classList.add('show'); };
+            if (c) c.onclick = function() { s.classList.remove('show'); o.classList.remove('show'); };
+            if (o) o.onclick = function() { s.classList.remove('show'); o.classList.remove('show'); };
+        });
+        function logout() { auth.signOut().then(function() { window.location.href = '../index.html'; }); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        document.addEventListener('click', function(e) {
+            if (e.target.classList && e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
+        });
+        function esc(t) { var d = document.createElement('div'); d.textContent = String(t == null ? '' : t); return d.innerHTML; }
+        function fmtDate(ts) { return ts && ts.toDate ? ts.toDate().toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric'}) : '—'; }
+        function initials(name) { return (name || '?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(); }
+        var AV_COLORS = ['#4f46e5','#f59e0b','#10b981','#8b5cf6','#ec4899','#0ea5e9','#ef4444'];
+        function avColor(uid) { var h = 0; for (var i=0;i<uid.length;i++) h += uid.charCodeAt(i); return AV_COLORS[h % AV_COLORS.length]; }
+        function statusBadge(s) {
+            var map = {active:['#d1fae5','#065f46'], pending:['#fef3c7','#92400e'], suspended:['#fee2e2','#991b1b'],
+                       success:['#d1fae5','#065f46'], failed:['#fee2e2','#991b1b'], refunded:['#f1f5f9','#475569'],
+                       valid:['#d1fae5','#065f46'], revoked:['#f1f5f9','#475569'], published:['#d1fae5','#065f46'],
+                       draft:['#f1f5f9','#475569'], archived:['#f1f5f9','#475569'], rejected:['#fee2e2','#991b1b']};
+            var c = map[s] || ['#f1f5f9','#475569'];
+            return '<span class="status-badge" style="background:'+c[0]+';color:'+c[1]+'">'+esc(s || '—')+'</span>';
+        }
+    </script>
+    <script>
+var RESULTS = [], EXAMS = [], QLIST = [];
+document.addEventListener('DOMContentLoaded', async function() {
+    await Admin.requireAdmin();
+    load();
+});
+
+async function load() {
+    RESULTS = await Admin.getExamResults(100);
+    EXAMS = await Admin.getExams();
+
+    document.getElementById('e-total').textContent = EXAMS.length;
+    document.getElementById('e-attempts').textContent = RESULTS.length;
+    var passed = RESULTS.filter(function(r){return r.passed;}).length;
+    document.getElementById('e-passrate').textContent = RESULTS.length ? Math.round((passed/RESULTS.length)*100) + '%' : '—';
+    var certSnap = await db.collection('certificates').get();
+    document.getElementById('e-certs').textContent = certSnap.size;
+
+    // exams cards
+    var list = document.getElementById('exams-list');
+    if (!EXAMS.length) list.innerHTML = '<p style="color:var(--gray-500);">No exams published yet.</p>';
+    else list.innerHTML = EXAMS.map(function(e) {
+        return '<div style="background:white;border-radius:14px;padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-100);">'
+        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;"><strong>'+esc(e.title)+'</strong>'
+        + '<button class="action-btn danger" onclick="delExam(\''+e.id+'\',\''+esc(e.title)+'\')" title="Delete">🗑️</button></div>'
+        + '<p style="font-size:0.85rem;color:var(--gray-500);">'+(e.questions?e.questions.length:0)+' questions • '+e.durationMinutes+' mins • Pass: '+e.passMark+'%</p>'
+        + '</div>';
+    }).join('');
+
+    // results table
+    var tb = document.getElementById('tbody');
+    if (!RESULTS.length) tb.innerHTML = '<tr class="empty-row"><td colspan="5">No exam attempts yet.</td></tr>';
+    else tb.innerHTML = RESULTS.slice(0, 30).map(function(r) {
+        return '<tr>'
+        + '<td><div class="user-cell"><div class="user-avatar-sm" style="background:'+avColor(r.studentId)+';width:32px;height:32px;font-size:0.75rem;">'+initials(r.studentName)+'</div>'+esc(r.studentName)+'</div></td>'
+        + '<td>'+esc(r.examTitle||'—')+'</td>'
+        + '<td><strong style="color:'+(r.passed?'#059669':'#dc2626')+';">'+(r.percentage||0)+'%</strong></td>'
+        + '<td>'+statusBadge(r.passed?'success':'failed')+'</td>'
+        + '<td>'+fmtDate(r.submittedAt)+'</td></tr>';
+    }).join('');
+}
+
+async function delExam(id, title) {
+    if (!confirm('Delete exam "' + title + '"?\nPast results are kept.')) return;
+    await Admin.deleteExamDoc(id);
+    load();
+}
+
+// ---------- Exam builder ----------
+function addQuestion() {
+    var idx = QLIST.length;
+    QLIST.push({ question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' });
+    renderQuestions();
+}
+
+function renderQuestions() {
+    var box = document.getElementById('questions');
+    document.getElementById('q-count').textContent = QLIST.length;
+    box.innerHTML = QLIST.map(function(q, i) {
+        var opts = q.options.map(function(o, oi) {
+            return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">'
+            + '<input type="radio" name="correct-'+i+'" '+(q.correctAnswer===oi?'checked':'')+' onchange="setCorrect('+i+','+oi+')" title="Correct answer">'
+            + '<input class="form-control" style="padding:8px 12px;font-size:0.9rem;" value="'+esc(o)+'" onchange="setOpt('+i+','+oi+',this.value)" placeholder="Option '+(oi+1)+'">'
+            + '</div>';
+        }).join('');
+        return '<div style="background:var(--gray-50);border-radius:12px;padding:16px;margin-bottom:12px;">'
+        + '<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><strong>Q'+(i+1)+'</strong>'
+        + '<button class="action-btn danger" onclick="delQuestion('+i+')">🗑️</button></div>'
+        + '<input class="form-control" style="margin-bottom:10px;" value="'+esc(q.question)+'" onchange="setQ('+i+',this.value)" placeholder="Question text">'
+        + opts
+        + '<input class="form-control" style="margin-top:6px;padding:8px 12px;font-size:0.85rem;" value="'+esc(q.explanation)+'" onchange="setExp('+i+',this.value)" placeholder="Explanation (optional)">'
+        + '</div>';
+    }).join('');
+}
+
+function setQ(i, v) { QLIST[i].question = v; }
+function setOpt(i, oi, v) { QLIST[i].options[oi] = v; }
+function setCorrect(i, oi) { QLIST[i].correctAnswer = oi; }
+function setExp(i, v) { QLIST[i].explanation = v; }
+function delQuestion(i) { QLIST.splice(i, 1); renderQuestions(); }
+
+async function saveExam() {
+    var title = document.getElementById('x-title').value.trim();
+    if (!title) { alert('Exam title required.'); return; }
+    var valid = QLIST.filter(function(q){ return q.question.trim() && q.options.filter(function(o){return o.trim();}).length >= 2; });
+    if (!valid.length) { alert('Add at least 1 complete question.'); return; }
+
+    await Admin.createExam({
+        title: title,
+        courseName: document.getElementById('x-course').value || '',
+        durationMinutes: parseInt(document.getElementById('x-dur').value) || 60,
+        passMark: parseInt(document.getElementById('x-pass').value) || 70,
+        certPrefix: 'KBOA',
+        questions: valid
+    });
+    closeModal('add-modal');
+    document.getElementById('x-title').value = '';
+    QLIST = []; renderQuestions();
+    alert('✅ Exam published with ' + valid.length + ' questions!');
+    load();
+}
+</script>
+</body>
+</html>

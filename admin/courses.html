@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Courses - KBOA Admin</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+    .admin-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .admin-search { flex: 1; min-width: 220px; position: relative; }
+    .admin-search input { width: 100%; padding: 12px 15px 12px 45px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; }
+    .admin-search::before { content: '🔍'; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); }
+    .admin-select { padding: 12px 15px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; cursor: pointer; background: white; }
+    .data-table-card { background: white; border-radius: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .table-scroll { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    .data-table th { background: var(--gray-50); padding: 14px 15px; text-align: left; font-size: 0.8rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
+    .data-table td { padding: 14px 15px; border-bottom: 1px solid var(--gray-100); font-size: 0.92rem; color: var(--gray-700); vertical-align: middle; }
+    .data-table tbody tr:hover { background: var(--gray-50); }
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .user-avatar-sm { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: white; flex-shrink: 0; }
+    .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; text-transform: capitalize; }
+    .action-btns { display: flex; gap: 6px; }
+    .action-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.15s; }
+    .action-btn:hover { background: var(--gray-100); }
+    .action-btn.ok:hover { background: #d1fae5; }
+    .action-btn.danger:hover { background: #fee2e2; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal-content { background: white; border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 20px 25px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 25px; }
+    .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-weight: 600; margin-bottom: 7px; color: var(--gray-700); font-size: 0.92rem; }
+    .form-control { width: 100%; padding: 11px 14px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; font-size: 0.98rem; }
+    .form-control:focus { outline: none; border-color: var(--primary-color); }
+    .stat-card { cursor: default; }
+    .empty-row td { text-align: center; padding: 40px; color: var(--gray-500); }
+</style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Admin</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
+    <nav class="sidebar-nav"><ul>
+        <li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>Students</span></a></li><li><a href="teachers.html" class="sidebar-link"><span class="icon">👨‍🏫</span><span>Teachers</span></a></li><li><a href="courses.html" class="sidebar-link active"><span class="icon">📚</span><span>Courses</span></a></li><li><a href="payments.html" class="sidebar-link"><span class="icon">💳</span><span>Payments</span></a></li><li><a href="exams.html" class="sidebar-link"><span class="icon">📝</span><span>Exams</span></a></li><li><a href="certificates.html" class="sidebar-link"><span class="icon">🏆</span><span>Certificates</span></a></li><li><a href="analytics.html" class="sidebar-link"><span class="icon">📈</span><span>Analytics</span></a></li><li><a href="reports.html" class="sidebar-link"><span class="icon">📄</span><span>Reports</span></a></li><li><a href="settings.html" class="sidebar-link"><span class="icon">⚙️</span><span>Settings</span></a></li>
+    </ul></nav>
+    <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Manage Courses</h1></div>
+                <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#ef4444;">A</div><span class="user-name">Admin</span></button></div></div>
+            </header>
+            <div class="content" style="padding-top: 25px;">
+<div class="admin-header-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
+    <div><h2 class="content-title">📚 Manage Courses</h2><p class="content-subtitle">Approve, publish & manage all courses</p></div>
+    <button class="btn btn-primary" onclick="openAdd()">+ Add Course</button>
+</div>
+
+<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px;">
+    <div class="stat-card"><div class="stat-icon blue">📚</div><div class="stat-info"><h3 id="c-total">—</h3><p>Total</p></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><h3 id="c-pub">—</h3><p>Published</p></div></div>
+    <div class="stat-card"><div class="stat-icon orange">⏳</div><div class="stat-info"><h3 id="c-pending">—</h3><p>Pending Review</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="c-rev">—</h3><p>Est. Revenue</p></div></div>
+</div>
+
+<div class="admin-filters">
+    <div class="admin-search"><input type="text" id="search" placeholder="Search courses…"></div>
+    <select class="admin-select" id="filter-status"><option value="all">All Status</option><option value="published">Published</option><option value="pending">Pending Review</option><option value="draft">Draft</option><option value="archived">Archived</option></select>
+</div>
+
+<div class="data-table-card"><div class="table-scroll">
+<table class="data-table"><thead><tr>
+    <th>Course</th><th>Instructor</th><th>Price</th><th>Students</th><th>Status</th><th>Actions</th>
+</tr></thead><tbody id="tbody"><tr class="empty-row"><td colspan="6">⏳ Loading…</td></tr></tbody></table>
+</div></div>
+
+<div class="modal-overlay" id="add-modal"><div class="modal-content">
+    <div class="modal-header"><h2>➕ Add Course</h2><button class="modal-close" onclick="closeModal('add-modal')">✕</button></div>
+    <div class="modal-body">
+        <div class="form-group"><label class="form-label">Course Title *</label><input class="form-control" id="n-title"></div>
+        <div class="form-group"><label class="form-label">Instructor *</label><select class="form-control" id="n-instructor"></select></div>
+        <div class="form-group"><label class="form-label">Category *</label><select class="form-control" id="n-cat"><option value="academic">Academic</option><option value="digital">Digital Skills</option><option value="business">Business</option><option value="tech">AI & Tech</option></select></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group"><label class="form-label">Price (₦, 0=Free)</label><input class="form-control" id="n-price" type="number" value="0"></div>
+            <div class="form-group"><label class="form-label">Duration</label><input class="form-control" id="n-dur" placeholder="e.g., 6 weeks"></div>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="addCourse()">✅ Create Course (Draft)</button>
+    </div>
+</div></div></div>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="js/admin-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+            var t = document.getElementById('menu-toggle'), c = document.getElementById('sidebar-close');
+            if (t) t.onclick = function() { s.classList.add('show'); o.classList.add('show'); };
+            if (c) c.onclick = function() { s.classList.remove('show'); o.classList.remove('show'); };
+            if (o) o.onclick = function() { s.classList.remove('show'); o.classList.remove('show'); };
+        });
+        function logout() { auth.signOut().then(function() { window.location.href = '../index.html'; }); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        document.addEventListener('click', function(e) {
+            if (e.target.classList && e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
+        });
+        function esc(t) { var d = document.createElement('div'); d.textContent = String(t == null ? '' : t); return d.innerHTML; }
+        function fmtDate(ts) { return ts && ts.toDate ? ts.toDate().toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric'}) : '—'; }
+        function initials(name) { return (name || '?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(); }
+        var AV_COLORS = ['#4f46e5','#f59e0b','#10b981','#8b5cf6','#ec4899','#0ea5e9','#ef4444'];
+        function avColor(uid) { var h = 0; for (var i=0;i<uid.length;i++) h += uid.charCodeAt(i); return AV_COLORS[h % AV_COLORS.length]; }
+        function statusBadge(s) {
+            var map = {active:['#d1fae5','#065f46'], pending:['#fef3c7','#92400e'], suspended:['#fee2e2','#991b1b'],
+                       success:['#d1fae5','#065f46'], failed:['#fee2e2','#991b1b'], refunded:['#f1f5f9','#475569'],
+                       valid:['#d1fae5','#065f46'], revoked:['#f1f5f9','#475569'], published:['#d1fae5','#065f46'],
+                       draft:['#f1f5f9','#475569'], archived:['#f1f5f9','#475569'], rejected:['#fee2e2','#991b1b']};
+            var c = map[s] || ['#f1f5f9','#475569'];
+            return '<span class="status-badge" style="background:'+c[0]+';color:'+c[1]+'">'+esc(s || '—')+'</span>';
+        }
+    </script>
+    <script>
+var ALL = [];
+document.addEventListener('DOMContentLoaded', async function() {
+    await Admin.requireAdmin();
+    load();
+    document.getElementById('search').addEventListener('input', render);
+    document.getElementById('filter-status').addEventListener('change', render);
+});
+
+async function load() {
+    ALL = await Admin.getAllCourses();
+    document.getElementById('c-total').textContent = ALL.length;
+    document.getElementById('c-pub').textContent = ALL.filter(function(c){return c.status==='published';}).length;
+    document.getElementById('c-pending').textContent = ALL.filter(function(c){return c.status==='pending';}).length;
+    var rev = ALL.reduce(function(s,c){ return s + (c.price||0) * (c.studentCount||0); }, 0);
+    document.getElementById('c-rev').textContent = '₦' + (rev/1000000).toFixed(1) + 'M';
+    render();
+}
+
+function render() {
+    var q = document.getElementById('search').value.toLowerCase();
+    var fs = document.getElementById('filter-status').value;
+    var rows = ALL.filter(function(c) {
+        var okQ = (c.title||'').toLowerCase().includes(q);
+        var okS = fs === 'all' || (c.status||'draft') === fs;
+        return okQ && okS;
+    });
+    var tb = document.getElementById('tbody');
+    if (!rows.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="6">No courses found.</td></tr>'; return; }
+    tb.innerHTML = rows.map(function(c) {
+        var st = c.status || 'draft';
+        var actions = '';
+        if (st === 'pending') {
+            actions = '<button class="action-btn ok" onclick="approveCourse(\''+c.id+'\')" title="Approve & Publish">✅</button>'
+                    + '<button class="action-btn danger" onclick="requestChanges(\''+c.id+'\')" title="Request Changes">❌</button>';
+        } else if (st === 'published') {
+            actions = '<button class="action-btn" onclick="archiveCourse(\''+c.id+'\')" title="Archive">📦</button>';
+        } else if (st === 'archived' || st === 'draft') {
+            actions = '<button class="action-btn ok" onclick="publishCourse(\''+c.id+'\')" title="Publish">✅</button>';
+        }
+        actions += '<button class="action-btn danger" onclick="delCourse(\''+c.id+'\',\''+esc(c.title)+'\')" title="Delete">🗑️</button>';
+        return '<tr>'
+        + '<td><div style="display:flex;align-items:center;gap:10px;"><img src="../assets/images/course-default.jpg" style="width:46px;height:32px;border-radius:6px;object-fit:cover;"><div><div style="font-weight:600;color:var(--gray-900);">'+esc(c.title)+'</div><div style="font-size:0.78rem;color:var(--gray-500);">'+esc(c.category||'')+' • '+esc(c.level||'')+'</div></div></div></td>'
+        + '<td>'+esc(c.instructor||'—')+'</td>'
+        + '<td><strong>'+(c.price>0?'₦'+Number(c.price).toLocaleString():'<span style="color:#059669;">FREE</span>')+'</strong></td>'
+        + '<td>'+(c.studentCount||0)+'</td>'
+        + '<td>'+statusBadge(st)+'</td>'
+        + '<td><div class="action-btns">'+actions+'</div></td></tr>';
+    }).join('');
+}
+
+async function approveCourse(id) {
+    if (!confirm('Approve & publish this course? It becomes visible to students.')) return;
+    await Admin.setCourseStatus(id, 'published');
+    var c = ALL.find(function(x){return x.id===id;}); if (c) c.status = 'published';
+    render();
+}
+
+async function publishCourse(id) {
+    await Admin.setCourseStatus(id, 'published');
+    var c = ALL.find(function(x){return x.id===id;}); if (c) c.status = 'published';
+    render();
+}
+
+async function requestChanges(id) {
+    var note = prompt('What must the instructor fix? (sent as review note)');
+    if (note === null) return;
+    await Admin.setCourseStatus(id, 'draft', note);
+    var c = ALL.find(function(x){return x.id===id;}); if (c) { c.status = 'draft'; c.reviewNote = note; }
+    render();
+}
+
+async function archiveCourse(id) {
+    if (!confirm('Archive this course? Hidden from students.')) return;
+    await Admin.setCourseStatus(id, 'archived');
+    var c = ALL.find(function(x){return x.id===id;}); if (c) c.status = 'archived';
+    render();
+}
+
+async function delCourse(id, title) {
+    if (!confirm('⚠️ DELETE "' + title + '" permanently?\nEnrollments remain in database.')) return;
+    await Admin.deleteCourseDoc(id);
+    ALL = ALL.filter(function(x){return x.id!==id;});
+    render();
+    alert('Course deleted.');
+}
+
+async function openAdd() {
+    var sel = document.getElementById('n-instructor');
+    sel.innerHTML = '<option value="">— Select instructor —</option>';
+    var teachers = await Admin.getUsersByRole('instructor');
+    teachers.filter(function(t){return (t.status||'active')==='active';}).forEach(function(t) {
+        sel.innerHTML += '<option value="'+t.uid+'" data-name="'+esc(t.fullName)+'">'+esc(t.fullName)+'</option>';
+    });
+    document.getElementById('add-modal').classList.add('show');
+}
+
+async function addCourse() {
+    var title = document.getElementById('n-title').value.trim();
+    var sel = document.getElementById('n-instructor');
+    var iid = sel.value;
+    if (!title || !iid) { alert('Title and instructor required.'); return; }
+    var instructorName = sel.options[sel.selectedIndex].getAttribute('data-name');
+    await Admin.createCourse({
+        title: title,
+        instructor: instructorName,
+        instructorId: iid,
+        category: document.getElementById('n-cat').value,
+        price: parseInt(document.getElementById('n-price').value) || 0,
+        duration: document.getElementById('n-dur').value,
+        modules: []
+    });
+    closeModal('add-modal');
+    alert('✅ Course created as DRAFT. Instructor adds content from their portal.');
+    load();
+}
+</script>
+</body>
+</html>

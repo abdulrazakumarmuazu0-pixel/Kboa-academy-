@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - KBOA Admin</title>
+    <title>Manage Payments - KBOA Admin</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
     .admin-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -44,51 +44,39 @@
         <aside class="sidebar" id="sidebar">
     <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Admin</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
     <nav class="sidebar-nav"><ul>
-        <li><a href="dashboard.html" class="sidebar-link active"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="admissions.html" class="sidebar-link"><span class="icon">🎓</span><span>Admissions</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>Students</span></a></li><li><a href="teachers.html" class="sidebar-link"><span class="icon">👨‍🏫</span><span>Teachers</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>Courses</span></a></li><li><a href="payments.html" class="sidebar-link"><span class="icon">💳</span><span>Payments</span></a></li><li><a href="exams.html" class="sidebar-link"><span class="icon">📝</span><span>Exams</span></a></li><li><a href="certificates.html" class="sidebar-link"><span class="icon">🏆</span><span>Certificates</span></a></li><li><a href="analytics.html" class="sidebar-link"><span class="icon">📈</span><span>Analytics</span></a></li><li><a href="reports.html" class="sidebar-link"><span class="icon">📄</span><span>Reports</span></a></li><li><a href="audit-logs.html" class="sidebar-link"><span class="icon">🛡️</span><span>Audit Logs</span></a></li><li><a href="observability.html" class="sidebar-link"><span class="icon">🩺</span><span>Observability</span></a></li><li><a href="settings.html" class="sidebar-link"><span class="icon">⚙️</span><span>Settings</span></a></li>
+        <li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>Students</span></a></li><li><a href="teachers.html" class="sidebar-link"><span class="icon">👨‍🏫</span><span>Teachers</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>Courses</span></a></li><li><a href="payments.html" class="sidebar-link active"><span class="icon">💳</span><span>Payments</span></a></li><li><a href="exams.html" class="sidebar-link"><span class="icon">📝</span><span>Exams</span></a></li><li><a href="certificates.html" class="sidebar-link"><span class="icon">🏆</span><span>Certificates</span></a></li><li><a href="analytics.html" class="sidebar-link"><span class="icon">📈</span><span>Analytics</span></a></li><li><a href="reports.html" class="sidebar-link"><span class="icon">📄</span><span>Reports</span></a></li><li><a href="settings.html" class="sidebar-link"><span class="icon">⚙️</span><span>Settings</span></a></li>
     </ul></nav>
     <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
 </aside>
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <main class="main-content">
             <header class="topbar">
-                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Admin Dashboard</h1></div>
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Manage Payments</h1></div>
                 <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#ef4444;">A</div><span class="user-name">Admin</span></button></div></div>
             </header>
             <div class="content" style="padding-top: 25px;">
-<div class="content-header" style="margin-bottom:25px;">
-    <h2 class="content-title">📊 Academy Overview</h2>
-    <p class="content-subtitle">Live data from Firestore</p>
+<div class="admin-header-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
+    <div><h2 class="content-title">💳 Manage Payments</h2><p class="content-subtitle">Real transactions from Firestore</p></div>
+    <button class="btn btn-outline" onclick="exportCSV()">📥 Export CSV</button>
 </div>
 
-<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:25px;">
-    <div class="stat-card"><div class="stat-icon blue">👨‍🎓</div><div class="stat-info"><h3 id="d-students">—</h3><p>Total Students</p></div></div>
-    <div class="stat-card"><div class="stat-icon green">👨‍🏫</div><div class="stat-info"><h3 id="d-teachers">—</h3><p>Teachers</p></div></div>
-    <div class="stat-card"><div class="stat-icon orange">📚</div><div class="stat-info"><h3 id="d-courses">—</h3><p>Courses</p></div></div>
-    <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="d-revenue">—</h3><p>Revenue</p></div></div>
+<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px;">
+    <div class="stat-card"><div class="stat-icon green">💰</div><div class="stat-info"><h3 id="p-rev">—</h3><p>Revenue</p></div></div>
+    <div class="stat-card"><div class="stat-icon blue">🧾</div><div class="stat-info"><h3 id="p-count">—</h3><p>Transactions</p></div></div>
+    <div class="stat-card"><div class="stat-icon orange">💸</div><div class="stat-info"><h3 id="p-fees">—</h3><p>Platform Fees</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple">👨‍🏫</div><div class="stat-info"><h3 id="p-earn">—</h3><p>Instructor Share</p></div></div>
 </div>
 
-<div class="dashboard-section" style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-        <h3 style="font-weight:700;">👋 Quick Actions</h3>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="courses.html" class="btn btn-primary">+ Review Courses</a>
-        <a href="teachers.html" class="btn btn-outline">👨‍🏫 Approve Teachers</a>
-        <a href="payments.html" class="btn btn-outline">💳 View Payments</a>
-        <a href="exams.html" class="btn btn-outline">📝 Create Exam</a>
-    </div>
+<div class="admin-filters">
+    <div class="admin-search"><input type="text" id="search" placeholder="Search reference, student, course…"></div>
+    <select class="admin-select" id="filter-status"><option value="all">All Status</option><option value="success">Success</option><option value="pending">Pending</option><option value="failed">Failed</option><option value="refunded">Refunded</option></select>
 </div>
 
-<div class="dashboard-section" style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <h3 style="font-weight:700;">🆕 Latest Students</h3>
-        <a href="students.html" class="btn btn-sm btn-outline">View All →</a>
-    </div>
-    <div class="table-scroll"><table class="data-table" style="min-width:480px;">
-        <thead><tr><th>Student</th><th>Email</th><th>Status</th><th>Joined</th></tr></thead>
-        <tbody id="recent-body"><tr class="empty-row"><td colspan="4">⏳ Loading…</td></tr></tbody>
-    </table></div>
-</div></div>
+<div class="data-table-card"><div class="table-scroll">
+<table class="data-table"><thead><tr>
+    <th>Reference</th><th>Student</th><th>Course</th><th>Amount</th><th>Gateway</th><th>Date</th><th>Status</th><th>Actions</th>
+</tr></thead><tbody id="tbody"><tr class="empty-row"><td colspan="8">⏳ Loading…</td></tr></tbody></table>
+</div></div></div>
         </main>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -96,7 +84,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
-    <script src="../js/error-reporter.js"></script>
     <script src="js/admin-data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -126,24 +113,86 @@
         }
     </script>
     <script>
+var ALL = [];
 document.addEventListener('DOMContentLoaded', async function() {
     await Admin.requireAdmin();
-    var stats = await Admin.getAdminStats();
-    document.getElementById('d-students').textContent = stats.students.toLocaleString();
-    document.getElementById('d-teachers').textContent = stats.teachers.toLocaleString();
-    document.getElementById('d-courses').textContent = stats.courses.toLocaleString();
-    document.getElementById('d-revenue').textContent = '₦' + stats.revenue.toLocaleString();
-
-    var tb = document.getElementById('recent-body');
-    if (!stats.recentStudents.length) tb.innerHTML = '<tr class="empty-row"><td colspan="4">No students yet.</td></tr>';
-    else tb.innerHTML = stats.recentStudents.map(function(u) {
-        return '<tr>'
-        + '<td><div class="user-cell"><div class="user-avatar-sm" style="background:'+avColor(u.uid)+';width:34px;height:34px;font-size:0.8rem;">'+initials(u.fullName)+'</div><strong>'+esc(u.fullName)+'</strong></div></td>'
-        + '<td style="font-size:0.88rem;color:var(--gray-500);">'+esc(u.email)+'</td>'
-        + '<td>'+statusBadge(u.status||'active')+'</td>'
-        + '<td>'+fmtDate(u.createdAt)+'</td></tr>';
-    }).join('');
+    load();
+    document.getElementById('search').addEventListener('input', render);
+    document.getElementById('filter-status').addEventListener('change', render);
 });
+
+async function load() {
+    ALL = await Admin.getPayments(200);
+    var success = ALL.filter(function(p){return p.status==='success';});
+    var rev = success.reduce(function(s,p){return s+(p.amount||0);},0);
+    document.getElementById('p-rev').textContent = '₦' + rev.toLocaleString();
+    document.getElementById('p-count').textContent = ALL.length;
+    document.getElementById('p-fees').textContent = '₦' + Math.round(rev*0.10).toLocaleString();
+    document.getElementById('p-earn').textContent = '₦' + Math.round(rev*0.90).toLocaleString();
+    render();
+}
+
+function render() {
+    var q = document.getElementById('search').value.toLowerCase();
+    var fs = document.getElementById('filter-status').value;
+    var rows = ALL.filter(function(p) {
+        var okQ = (p.reference||'').toLowerCase().includes(q) || (p.studentName||'').toLowerCase().includes(q) || (p.courseTitle||'').toLowerCase().includes(q);
+        var okS = fs === 'all' || p.status === fs;
+        return okQ && okS;
+    });
+    var tb = document.getElementById('tbody');
+    if (!rows.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="8">No transactions found.</td></tr>'; return; }
+    tb.innerHTML = rows.map(function(p) {
+        var actions = '<button class="action-btn" onclick="viewReceipt(\''+p.id+'\')" title="Receipt">🧾</button>';
+        if (p.status === 'success') actions += '<button class="action-btn danger" onclick="refund(\''+p.id+'\')" title="Refund">↩️</button>';
+        if (p.status === 'pending') actions += '<button class="action-btn ok" onclick="verifyManual(\''+p.id+'\')" title="Mark as Paid">✓</button>';
+        return '<tr>'
+        + '<td style="font-family:monospace;font-size:0.8rem;">'+esc(p.reference||p.id)+'</td>'
+        + '<td>'+esc(p.studentName)+'</td>'
+        + '<td>'+esc(p.courseTitle||p.courseId||'—')+'</td>'
+        + '<td><strong>₦'+(p.amount||0).toLocaleString()+'</strong></td>'
+        + '<td>'+esc(p.gateway||'paystack')+'</td>'
+        + '<td>'+fmtDate(p.createdAt)+'</td>'
+        + '<td>'+statusBadge(p.status||'pending')+'</td>'
+        + '<td><div class="action-btns">'+actions+'</div></td></tr>';
+    }).join('');
+}
+
+function viewReceipt(id) {
+    var p = ALL.find(function(x){return x.id===id;});
+    if (!p) return;
+    alert('🧾 RECEIPT\n\nReference: ' + (p.reference||p.id) + '\nStudent: ' + p.studentName + '\nAmount: ₦' + (p.amount||0).toLocaleString() + '\nStatus: ' + (p.status||'') + '\nDate: ' + fmtDate(p.createdAt));
+}
+
+async function refund(id) {
+    var p = ALL.find(function(x){return x.id===id;});
+    if (!confirm('Process REAL refund of ₦' + (p.amount||0).toLocaleString() + ' to ' + p.studentName + '?')) return;
+    try {
+        await Admin.callFunction('refundPayment', { paymentId: p.id, reference: p.reference, amount: p.amount });
+        p.status = 'refunded';
+        render();
+        alert('✅ Refund processed via Paystack.');
+    } catch (e) {
+        alert('❌ ' + e.message + '\n(Deploy functions + set PAYSTACK_SECRET_KEY secret first)');
+    }
+}
+
+async function verifyManual(id) {
+    if (!confirm('Mark this payment as SUCCESS manually? (For bank transfers)')) return;
+    await Admin.setPaymentStatus(id, 'success');
+    var p = ALL.find(function(x){return x.id===id;}); if (p) p.status = 'success';
+    render();
+}
+
+function exportCSV() {
+    var csv = 'Reference,Student,Course,Amount,Gateway,Status,Date\n' + ALL.map(function(p) {
+        return [p.reference, p.studentName, p.courseTitle||'', p.amount, p.gateway, p.status, fmtDate(p.createdAt)].join(',');
+    }).join('\n');
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'kboa-payments.csv';
+    a.click();
+}
 </script>
 </body>
 </html>

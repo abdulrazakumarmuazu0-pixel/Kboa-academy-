@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Certificates - KBOA Admin</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .admin-filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+        .admin-search{flex:1;min-width:220px;position:relative;}
+        .admin-search input{width:100%;padding:12px 15px 12px 45px;border:1px solid var(--gray-300);border-radius:8px;font-size:0.95rem;}
+        .admin-search::before{content:'🔍';position:absolute;left:15px;top:50%;transform:translateY(-50%);}
+        .admin-select{padding:12px 15px;border:1px solid var(--gray-300);border-radius:8px;font-size:0.95rem;cursor:pointer;background:white;}
+        .data-table-card{background:white;border-radius:12px;box-shadow:var(--shadow-sm);overflow:hidden;}
+        .table-scroll{overflow-x:auto;}
+        .data-table{width:100%;border-collapse:collapse;min-width:760px;}
+        .data-table th{background:var(--gray-50);padding:14px 15px;text-align:left;font-size:0.8rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;border-bottom:2px solid var(--gray-200);white-space:nowrap;}
+        .data-table td{padding:14px 15px;border-bottom:1px solid var(--gray-100);font-size:0.92rem;color:var(--gray-700);vertical-align:middle;}
+        .data-table tbody tr:hover{background:var(--gray-50);}
+        .user-cell{display:flex;align-items:center;gap:12px;}
+        .user-avatar-sm{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:white;flex-shrink:0;}
+        .status-badge{display:inline-block;padding:5px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;white-space:nowrap;text-transform:capitalize;}
+        .action-btns{display:flex;gap:6px;}
+        .action-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--gray-200);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.95rem;transition:all .15s;}
+        .action-btn:hover{background:var(--gray-100);}
+        .action-btn.ok:hover{background:#d1fae5;}
+        .action-btn.danger:hover{background:#fee2e2;}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
+        .modal-overlay.show{display:flex;}
+        .modal-content{background:white;border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;}
+        .modal-header{padding:20px 25px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;}
+        .modal-body{padding:25px;}
+        .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--gray-500);}
+        .form-group{margin-bottom:16px;}
+        .form-label{display:block;font-weight:600;margin-bottom:7px;color:var(--gray-700);font-size:0.92rem;}
+        .form-control{width:100%;padding:11px 14px;border:1px solid var(--gray-300);border-radius:8px;font-family:inherit;font-size:0.98rem;}
+        .form-control:focus{outline:none;border-color:var(--primary-color);}
+        .gen-tab{padding:10px 20px;border-radius:25px;border:2px solid var(--gray-200);background:white;font-weight:600;color:var(--gray-600);cursor:pointer;font-size:0.9rem;}
+        .gen-tab.active{background:var(--primary-color);color:white;border-color:var(--primary-color);}
+        .empty-row td{text-align:center;padding:40px;color:var(--gray-500);}
+        #gen-result{display:none;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:16px 20px;margin-bottom:16px;}
+        .cert-id-badge{font-family:monospace;font-weight:800;color:var(--primary-color);background:#eef2ff;padding:4px 12px;border-radius:8px;font-size:1.05rem;}
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Admin</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
+            <nav class="sidebar-nav"><ul>
+                <li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li>
+                <li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>Students</span></a></li>
+                <li><a href="teachers.html" class="sidebar-link"><span class="icon">👨‍🏫</span><span>Teachers</span></a></li>
+                <li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>Courses</span></a></li>
+                <li><a href="payments.html" class="sidebar-link"><span class="icon">💳</span><span>Payments</span></a></li>
+                <li><a href="exams.html" class="sidebar-link"><span class="icon">📝</span><span>Exams</span></a></li>
+                <li><a href="certificates.html" class="sidebar-link active"><span class="icon">🏆</span><span>Certificates</span></a></li>
+                <li><a href="analytics.html" class="sidebar-link"><span class="icon">📈</span><span>Analytics</span></a></li>
+                <li><a href="reports.html" class="sidebar-link"><span class="icon">📄</span><span>Reports</span></a></li>
+                <li><a href="settings.html" class="sidebar-link"><span class="icon">⚙️</span><span>Settings</span></a></li>
+            </ul></nav>
+            <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
+        </aside>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Manage Certificates</h1></div>
+                <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#ef4444;">A</div><span class="user-name">Admin</span></button></div></div>
+            </header>
+
+            <div class="content" style="padding-top:25px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
+                    <div><h2 class="content-title">🏆 Manage Certificates</h2><p class="content-subtitle">Generate, verify & revoke student certificates</p></div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-outline" onclick="exportCSV()">📥 Export CSV</button>
+                        <button class="btn btn-primary" onclick="openGenerate()">🏆 Generate Certificate</button>
+                    </div>
+                </div>
+
+                <div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px;">
+                    <div class="stat-card"><div class="stat-icon blue">🏆</div><div class="stat-info"><h3 id="ct-total">—</h3><p>Total Issued</p></div></div>
+                    <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><h3 id="ct-valid">—</h3><p>Valid</p></div></div>
+                    <div class="stat-card"><div class="stat-icon orange">📅</div><div class="stat-info"><h3 id="ct-month">—</h3><p>This Month</p></div></div>
+                    <div class="stat-card"><div class="stat-icon" style="background:#fee2e2;">🚫</div><div class="stat-info"><h3 id="ct-rev">—</h3><p>Revoked</p></div></div>
+                </div>
+
+                <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:14px;padding:22px 24px;margin-bottom:25px;color:#fff;display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
+                    <div style="font-size:2.2rem;">🔍</div>
+                    <div style="flex:1;min-width:220px;"><h3 style="margin-bottom:4px;">Quick Verification</h3><p style="opacity:0.9;font-size:0.9rem;">Enter certificate ID to verify instantly</p></div>
+                    <div style="display:flex;gap:10px;flex:1;min-width:260px;">
+                        <input type="text" id="verify-input" class="form-control" placeholder="KBOA-2026-000001" onkeypress="if(event.key==='Enter')verifyCert()">
+                        <button class="btn btn-white" onclick="verifyCert()">Verify</button>
+                    </div>
+                </div>
+                <div id="verify-result" style="display:none;margin-bottom:25px;padding:18px 22px;border-radius:12px;"></div>
+
+                <div class="admin-filters">
+                    <div class="admin-search"><input type="text" id="search" placeholder="Search certificate ID or student…"></div>
+                    <select class="admin-select" id="filter-status"><option value="all">All Status</option><option value="valid">Valid</option><option value="revoked">Revoked</option></select>
+                </div>
+
+                <div class="data-table-card"><div class="table-scroll">
+                    <table class="data-table"><thead><tr>
+                        <th>Certificate ID</th><th>Student</th><th>Course</th><th>Score</th><th>Issued</th><th>Status</th><th>Actions</th>
+                    </tr></thead><tbody id="tbody"><tr class="empty-row"><td colspan="7">⏳ Loading…</td></tr></tbody></table>
+                </div></div>
+
+                <!-- ============ GENERATE MODAL ============ -->
+                <div class="modal-overlay" id="gen-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>🏆 Generate Certificate</h2>
+                            <button class="modal-close" onclick="closeModal('gen-modal')">✕</button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="display:flex;gap:10px;margin-bottom:20px;">
+                                <button class="gen-tab active" id="tab-single-btn" onclick="switchGenTab('single')">📝 Single</button>
+                                <button class="gen-tab" id="tab-bulk-btn" onclick="switchGenTab('bulk')">📦 Bulk (from Exam)</button>
+                            </div>
+
+                            <div id="gen-result"></div>
+
+                            <!-- SINGLE -->
+                            <div id="gen-single">
+                                <div class="form-group">
+                                    <label class="form-label">Student *</label>
+                                    <select class="form-control" id="g-student"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Course *</label>
+                                    <select class="form-control" id="g-course"></select>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Score (%) *</label>
+                                        <input type="number" class="form-control" id="g-score" min="0" max="100" placeholder="85">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="g-date">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">ID Prefix</label>
+                                        <input type="text" class="form-control" id="g-prefix" value="KBOA" maxlength="10">
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-block btn-lg" id="g-single-btn" onclick="generateSingle()">🏆 Generate Certificate</button>
+                            </div>
+
+                            <!-- BULK -->
+                            <div id="gen-bulk" style="display:none;">
+                                <p style="font-size:0.9rem;color:var(--gray-600);margin-bottom:16px;">
+                                    📦 Issue certificates to <strong>all passing students</strong> of an exam automatically.
+                                    Students who already have a certificate for the course are skipped.
+                                </p>
+                                <div class="form-group">
+                                    <label class="form-label">Exam *</label>
+                                    <select class="form-control" id="g-exam"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">ID Prefix</label>
+                                    <input type="text" class="form-control" id="g-bulk-prefix" value="KBOA" maxlength="10">
+                                </div>
+                                <div id="bulk-info" style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:0.9rem;color:var(--gray-600);">
+                                    Select an exam to see passing students…
+                                </div>
+                                <button class="btn btn-primary btn-block btn-lg" id="g-bulk-btn" onclick="generateBulk()">📦 Generate All Certificates</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============ /GENERATE MODAL ============ -->
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="js/admin-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var s=document.getElementById('sidebar'),o=document.getElementById('sidebar-overlay');
+            var t=document.getElementById('menu-toggle'),c=document.getElementById('sidebar-close');
+            if(t)t.onclick=function(){s.classList.add('show');o.classList.add('show');};
+            if(c)c.onclick=function(){s.classList.remove('show');o.classList.remove('show');};
+            if(o)o.onclick=function(){s.classList.remove('show');o.classList.remove('show');};
+            load();
+            document.getElementById('search').addEventListener('input', render);
+            document.getElementById('filter-status').addEventListener('change', render);
+            document.getElementById('g-exam').addEventListener('change', updateBulkInfo);
+        });
+        function logout(){auth.signOut().then(function(){window.location.href='../index.html';});}
+        function closeModal(id){document.getElementById(id).classList.remove('show');}
+        document.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('modal-overlay'))e.target.classList.remove('show');});
+        function esc(t){var d=document.createElement('div');d.textContent=String(t==null?'':t);return d.innerHTML;}
+        function fmtDate(ts){return ts&&ts.toDate?ts.toDate().toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'}):'—';}
+        function initials(n){return (n||'?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();}
+        var AVC=['#4f46e5','#f59e0b','#10b981','#8b5cf6','#ec4899','#0ea5e9','#ef4444'];
+        function avColor(uid){var h=0;for(var i=0;i<uid.length;i++)h+=uid.charCodeAt(i);return AVC[h%AVC.length];}
+        function statusBadge(s){var m={valid:['#d1fae5','#065f46'],revoked:['#f1f5f9','#475569']};var c=m[s]||['#f1f5f9','#475569'];
+            return '<span class="status-badge" style="background:'+c[0]+';color:'+c[1]+'">'+esc(s||'—')+'</span>';}
+
+        var ALL = [];
+        async function load() {
+            await Admin.requireAdmin();
+            ALL = await Admin.getAllCertificates();
+            document.getElementById('ct-total').textContent = ALL.length;
+            document.getElementById('ct-valid').textContent = ALL.filter(function(c){return (c.status||'valid')==='valid';}).length;
+            document.getElementById('ct-rev').textContent = ALL.filter(function(c){return c.status==='revoked';}).length;
+            var now = new Date();
+            document.getElementById('ct-month').textContent = ALL.filter(function(c){
+                return c.createdAt && c.createdAt.toDate && c.createdAt.toDate().getMonth() === now.getMonth() && c.createdAt.toDate().getFullYear() === now.getFullYear();
+            }).length;
+            render();
+        }
+
+        function render() {
+            var q = document.getElementById('search').value.toLowerCase();
+            var fs = document.getElementById('filter-status').value;
+            var rows = ALL.filter(function(c) {
+                var okQ = (c.certificateId||'').toLowerCase().includes(q) || (c.studentName||'').toLowerCase().includes(q);
+                var okS = fs === 'all' || (c.status||'valid') === fs;
+                return okQ && okS;
+            });
+            var tb = document.getElementById('tbody');
+            if (!rows.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="7">No certificates found.</td></tr>'; return; }
+            tb.innerHTML = rows.map(function(c) {
+                var st = c.status || 'valid';
+                var actions = '<button class="action-btn" onclick="viewCert(\''+c.id+'\')" title="View">👁️</button>';
+                if (st === 'valid') actions += '<button class="action-btn danger" onclick="revoke(\''+c.id+'\')" title="Revoke">🚫</button>';
+                else actions += '<button class="action-btn ok" onclick="restore(\''+c.id+'\')" title="Restore">✅</button>';
+                return '<tr>'
+                + '<td><span class="cert-id-badge">'+esc(c.certificateId)+'</span></td>'
+                + '<td>'+esc(c.studentName)+'</td>'
+                + '<td>'+esc(c.courseName||'—')+'</td>'
+                + '<td><strong>'+(c.score||0)+'%</strong></td>'
+                + '<td>'+esc(c.completionDate||fmtDate(c.createdAt))+'</td>'
+                + '<td>'+statusBadge(st)+'</td>'
+                + '<td><div class="action-btns">'+actions+'</div></td></tr>';
+            }).join('');
+        }
+
+        async function verifyCert() {
+            var input = document.getElementById('verify-input').value.trim();
+            var res = document.getElementById('verify-result');
+            if (!input) { alert('Enter a certificate ID'); return; }
+            res.style.display = 'block';
+            try {
+                var snap = await db.collection('certificates').where('certificateId', '==', input).limit(1).get();
+                if (!snap.empty && (snap.docs[0].data().status||'valid') === 'valid') {
+                    var cert = snap.docs[0].data();
+                    db.collection('certificates').doc(snap.docs[0].id).update({
+                        verifyCount: firebase.firestore.FieldValue.increment(1),
+                        lastVerified: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    res.style.background = '#ecfdf5'; res.style.border = '1px solid #a7f3d0';
+                    res.innerHTML = '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><span style="font-size:1.8rem;">✅</span><div style="flex:1;"><strong style="color:#065f46;">VALID CERTIFICATE</strong><p style="font-size:0.9rem;color:var(--gray-600);margin-top:4px;">'+esc(cert.studentName)+' • '+esc(cert.courseName)+' • Score: '+cert.score+'% • '+esc(cert.completionDate||'')+'</p></div></div>';
+                } else {
+                    res.style.background = '#fef2f2'; res.style.border = '1px solid #fecaca';
+                    res.innerHTML = '<div style="display:flex;align-items:center;gap:14px;"><span style="font-size:1.8rem;">❌</span><div><strong style="color:#991b1b;">NOT FOUND OR REVOKED</strong><p style="font-size:0.9rem;color:var(--gray-600);">Check the ID and try again.</p></div></div>';
+                }
+            } catch (e) {
+                res.style.background = '#fef2f2'; res.style.border = '1px solid #fecaca';
+                res.innerHTML = '<strong style="color:#991b1b;">Error:</strong> ' + esc(e.message);
+            }
+        }
+
+        function viewCert(id) {
+            var c = ALL.find(function(x){return x.id===id;});
+            if (!c) return;
+            alert('🏆 CERTIFICATE\n\nID: ' + c.certificateId + '\nStudent: ' + c.studentName + '\nCourse: ' + (c.courseName||'') + '\nScore: ' + (c.score||0) + '%\nDate: ' + (c.completionDate||'') + '\nStatus: ' + (c.status||'valid') + (c.issueMethod ? '\nIssued via: ' + c.issueMethod : ''));
+        }
+
+        async function revoke(id) {
+            var reason = prompt('Reason for revocation:');
+            if (reason === null) return;
+            await Admin.setCertificateStatus(id, 'revoked', reason);
+            var c = ALL.find(function(x){return x.id===id;}); if (c) c.status = 'revoked';
+            render();
+        }
+        async function restore(id) {
+            if (!confirm('Restore this certificate to VALID?')) return;
+            await Admin.setCertificateStatus(id, 'valid');
+            var c = ALL.find(function(x){return x.id===id;}); if (c) c.status = 'valid';
+            render();
+        }
+
+        function exportCSV() {
+            var csv = 'CertificateID,Student,Course,Score,Date,Status\n' + ALL.map(function(c) {
+                return [c.certificateId, c.studentName, c.courseName, c.score, c.completionDate, c.status||'valid'].join(',');
+            }).join('\n');
+            var a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            a.download = 'kboa-certificates.csv';
+            a.click();
+        }
+
+        // ============ GENERATION ============
+        async function openGenerate() {
+            // Load students
+            var students = await Admin.getUsersByRole('student');
+            document.getElementById('g-student').innerHTML = students.map(function(u){
+                return '<option value="'+u.uid+'">'+esc(u.fullName)+' ('+esc(u.email)+')</option>';
+            }).join('') || '<option value="">— No students registered —</option>';
+
+            // Load courses
+            var coursesSnap = await db.collection('courses').get();
+            var courses = coursesSnap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+            document.getElementById('g-course').innerHTML = courses.map(function(c){
+                return '<option value="'+c.id+'">'+esc(c.title)+'</option>';
+            }).join('') || '<option value="">— No courses —</option>';
+
+            // Load exams for bulk
+            var examsSnap = await db.collection('exams').get();
+            var exams = examsSnap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+            document.getElementById('g-exam').innerHTML = exams.map(function(e){
+                return '<option value="'+e.id+'">'+esc(e.title)+' ('+(e.questions?e.questions.length:0)+' questions)</option>';
+            }).join('') || '<option value="">— No exams —</option>';
+
+            document.getElementById('g-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('gen-result').style.display = 'none';
+            updateBulkInfo();
+            document.getElementById('gen-modal').classList.add('show');
+        }
+
+        function switchGenTab(tab) {
+            document.getElementById('tab-single-btn').classList.toggle('active', tab === 'single');
+            document.getElementById('tab-bulk-btn').classList.toggle('active', tab === 'bulk');
+            document.getElementById('gen-single').style.display = tab === 'single' ? 'block' : 'none';
+            document.getElementById('gen-bulk').style.display = tab === 'bulk' ? 'block' : 'none';
+            document.getElementById('gen-result').style.display = 'none';
+        }
+
+        async function updateBulkInfo() {
+            var examId = document.getElementById('g-exam').value;
+            var info = document.getElementById('bulk-info');
+            if (!examId) { info.textContent = 'Select an exam to see passing students…'; return; }
+            var results = await db.collection('exam_results').where('examId', '==', examId).where('passed', '==', true).get();
+            info.innerHTML = '🎯 <strong>' + results.size + '</strong> passing students found. Certificates will be generated for those without one.';
+        }
+
+        async function generateSingle() {
+            var studentId = document.getElementById('g-student').value;
+            var courseId = document.getElementById('g-course').value;
+            var score = parseInt(document.getElementById('g-score').value);
+            var date = document.getElementById('g-date').value || new Date().toISOString().split('T')[0];
+            var prefix = document.getElementById('g-prefix').value.trim() || 'KBOA';
+
+            if (!studentId || !courseId) { alert('Select student and course.'); return; }
+            if (isNaN(score) || score < 0 || score > 100) { alert('Score must be 0-100.'); return; }
+
+            var btn = document.getElementById('g-single-btn');
+            btn.disabled = true; btn.textContent = '⏳ Generating…';
+
+            try {
+                var userSnap = await db.collection('users').doc(studentId).get();
+                var courseSnap = await db.collection('courses').doc(courseId).get();
+                var studentName = userSnap.exists ? (userSnap.data().fullName || 'Student') : 'Student';
+                var courseName = courseSnap.exists ? courseSnap.data().title : 'Course';
+
+                // Warn if duplicate
+                var existing = await db.collection('certificates')
+                    .where('studentId', '==', studentId)
+                    .where('courseId', '==', courseId).limit(1).get();
+                if (!existing.empty && !confirm(studentName + ' already has a certificate for this course. Create another?')) {
+                    btn.disabled = false; btn.textContent = '🏆 Generate Certificate'; return;
+                }
+
+                var certId = await Admin.generateCertId(prefix);
+                await Admin.createCertificate({
+                    certificateId: certId,
+                    studentId: studentId,
+                    studentName: studentName,
+                    courseId: courseId,
+                    courseName: courseName,
+                    score: score,
+                    completionDate: date,
+                    issueMethod: 'manual',
+                    issuedBy: auth.currentUser.uid
+                });
+
+                var result = document.getElementById('gen-result');
+                result.style.display = 'block';
+                result.innerHTML = '✅ <strong>Certificate issued!</strong><br>Student: <strong>' + esc(studentName) + '</strong> • Course: ' + esc(courseName) + '<br>ID: <span class="cert-id-badge">' + esc(certId) + '</span>';
+                btn.disabled = false; btn.textContent = '🏆 Generate Certificate';
+                document.getElementById('g-score').value = '';
+                load();
+            } catch (e) {
+                btn.disabled = false; btn.textContent = '🏆 Generate Certificate';
+                alert('❌ ' + e.message);
+            }
+        }
+
+        async function generateBulk() {
+            var examId = document.getElementById('g-exam').value;
+            var prefix = document.getElementById('g-bulk-prefix').value.trim() || 'KBOA';
+            if (!examId) { alert('Select an exam.'); return; }
+
+            var btn = document.getElementById('g-bulk-btn');
+            btn.disabled = true; btn.textContent = '⏳ Generating…';
+
+            try {
+                var result = await Admin.bulkGenerateFromExam(examId, prefix, auth.currentUser.uid);
+                var panel = document.getElementById('gen-result');
+                panel.style.display = 'block';
+                if (result.error) {
+                    panel.style.background = '#fef2f2'; panel.style.border = '1px solid #fecaca';
+                    panel.innerHTML = '❌ ' + esc(result.error);
+                } else {
+                    panel.style.background = '#ecfdf5'; panel.style.border = '1px solid #a7f3d0';
+                    panel.innerHTML = '✅ <strong>Bulk generation complete!</strong><br>'
+                        + '<strong>' + result.created + '</strong> certificates issued • '
+                        + result.skipped + ' skipped (already had certificate) • '
+                        + result.total + ' total passing students';
+                }
+                btn.disabled = false; btn.textContent = '📦 Generate All Certificates';
+                updateBulkInfo();
+                load();
+            } catch (e) {
+                btn.disabled = false; btn.textContent = '📦 Generate All Certificates';
+                alert('❌ ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
