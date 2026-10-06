@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Learning - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Course Learning Specific Styles */
+        .learning-container {
+            display: flex;
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+
+        .course-sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            left: -320px;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+
+        .course-sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .close-sidebar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            cursor: pointer;
+        }
+
+        .close-sidebar:hover {
+            background: var(--gray-100);
+        }
+
+        .course-progress-header {
+            padding: 15px 20px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .modules-list {
+            padding: 10px 0;
+        }
+
+        .module-item {
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .module-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .module-header:hover {
+            background: var(--gray-50);
+        }
+
+        .module-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 0.95rem;
+        }
+
+        .module-toggle {
+            color: var(--gray-400);
+            transition: transform 0.2s;
+        }
+
+        .module-item.expanded .module-toggle {
+            transform: rotate(180deg);
+        }
+
+        .lessons-list {
+            display: none;
+            background: var(--gray-50);
+        }
+
+        .module-item.expanded .lessons-list {
+            display: block;
+        }
+
+        .lesson-item {
+            padding: 12px 20px 12px 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .lesson-item:hover {
+            background: var(--gray-100);
+        }
+
+        .lesson-item.active {
+            background: var(--primary-color);
+            color: white;
+            border-left-color: var(--secondary-color);
+        }
+
+        .lesson-item.completed {
+            color: var(--gray-500);
+        }
+
+        .lesson-item.completed .lesson-title {
+            text-decoration: line-through;
+        }
+
+        .lesson-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .lesson-title {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .lesson-duration {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+
+        .main-learning-area {
+            flex: 1;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .learning-header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            cursor: pointer;
+        }
+
+        .menu-btn:hover {
+            background: var(--gray-100);
+        }
+
+        .course-title {
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-area {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .video-container {
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+
+        .video-container video,
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .lesson-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-header {
+            margin-bottom: 20px;
+        }
+
+        .lesson-title-main {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+
+        .lesson-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .lesson-body {
+            line-height: 1.8;
+            color: var(--gray-700);
+        }
+
+        .lesson-body h3 {
+            margin: 20px 0 10px;
+            color: var(--gray-900);
+        }
+
+        .lesson-body p {
+            margin-bottom: 15px;
+        }
+
+        .lesson-body ul,
+        .lesson-body ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .lesson-body li {
+            margin-bottom: 8px;
+        }
+
+        .pdf-viewer {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 600px;
+        }
+
+        .pdf-viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .completion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .course-sidebar {
+                width: 280px;
+                left: -280px;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+
+            .lesson-content {
+                padding: 20px;
+            }
+
+            .navigation-buttons {
+                flex-direction: column;
+            }
+
+            .navigation-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .course-sidebar {
+                position: static;
+                left: 0;
+            }
+
+            .main-learning-area {
+                margin-left: 0;
+            }
+
+            .menu-btn {
+                display: none;
+            }
+
+            .sidebar-overlay {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="learning-container">
+        <!-- Course Sidebar -->
+        <aside class="course-sidebar" id="course-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Course Content</span>
+                <button class="close-sidebar" id="close-sidebar">✕</button>
+            </div>
+
+            <div class="course-progress-header">
+                <div class="progress-info">
+                    <span>Course Progress</span>
+                    <span id="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="course-progress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="modules-list" id="modules-list">
+                <!-- Modules will be loaded here -->
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- Main Learning Area -->
+        <main class="main-learning-area">
+            <!-- Learning Header -->
+            <header class="learning-header">
+                <div class="header-left">
+                    <button class="menu-btn" id="menu-btn">☰</button>
+                    <h1 class="course-title" id="course-title">AI & ChatGPT Mastery</h1>
+                </div>
+                <div class="header-right">
+                    <span class="completion-badge" id="completion-badge" style="display: none;">
+                        ✓ Completed
+                    </span>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Video Player -->
+                <div class="video-container" id="video-container">
+                    <video id="lesson-video" controls poster="assets/images/video-poster.jpg">
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <!-- Lesson Content -->
+                <div class="lesson-content" id="lesson-content">
+                    <div class="lesson-header">
+                        <h2 class="lesson-title-main" id="lesson-title">Introduction to AI</h2>
+                        <div class="lesson-meta">
+                            <span>📊 Module 1, Lesson 1</span>
+                            <span>⏱️ 10:30</span>
+                            <span>📄 PDF Available</span>
+                        </div>
+                    </div>
+                    <div class="lesson-body" id="lesson-body">
+                        <p>Welcome to the AI & ChatGPT Mastery course! In this lesson, we will explore the fundamentals of Artificial Intelligence and understand how tools like ChatGPT are revolutionizing the way we work and learn.</p>
+
+                        <h3>What You Will Learn:</h3>
+                        <ul>
+                            <li>What is Artificial Intelligence?</li>
+                            <li>History and evolution of AI</li>
+                            <li>Understanding ChatGPT and its capabilities</li>
+                            <li>Real-world applications of AI</li>
+                        </ul>
+
+                        <h3>What is Artificial Intelligence?</h3>
+                        <p>Artificial Intelligence (AI) refers to computer systems that can perform tasks that typically require human intelligence. These tasks include understanding natural language, recognizing patterns, making decisions, and solving problems.</p>
+
+                        <h3>Key Concepts:</h3>
+                        <ol>
+                            <li><strong>Machine Learning:</strong> Systems that learn from data</li>
+                            <li><strong>Natural Language Processing:</strong> Understanding human language</li>
+                            <li><strong>Computer Vision:</strong> Interpreting visual information</li>
+                            <li><strong>Neural Networks:</strong> Systems inspired by the human brain</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- PDF Viewer (Hidden by default) -->
+                <div class="pdf-viewer" id="pdf-viewer" style="display: none;">
+                    <iframe src="" id="pdf-iframe"></iframe>
+                </div>
+
+                <!-- Quiz Container (Hidden by default) -->
+                <div class="quiz-container" id="quiz-container" style="display: none;">
+                    <h3>📝 Lesson Quiz</h3>
+                    <div id="quiz-content">
+                        <!-- Quiz content will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="navigation-buttons">
+                    <button class="btn btn-outline" id="prev-lesson-btn" onclick="previousLesson()">
+                        ← Previous Lesson
+                    </button>
+                    <button class="btn btn-primary" id="complete-btn" onclick="markAsComplete()">
+                        ✓ Mark as Complete
+                    </button>
+                    <button class="btn btn-primary" id="next-lesson-btn" onclick="nextLesson()">
+                        Next Lesson →
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/course-learning.js"></script>
+    <script src="js/native-bridge.js"></script>
+</body>
+</html>

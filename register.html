@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - KBOA</title>
+    <meta name="description" content="Join Knowledge Bridge Online Academy. Learn practical skills and earn certificates.">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .strength-bar { display: flex; gap: 5px; margin-top: 8px; }
+        .strength-seg { height: 5px; flex: 1; border-radius: 3px; background: var(--gray-200); transition: background 0.3s; }
+        .strength-label { font-size: 0.78rem; margin-top: 5px; font-weight: 600; }
+        .pw-wrap { position: relative; }
+        .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.05rem; padding: 4px; }
+        .phone-hint { font-size: 0.78rem; color: var(--gray-500); margin-top: 5px; }
+        #success-panel { display: none; text-align: center; padding: 10px 0; }
+        #success-panel .big-check { width: 74px; height: 74px; background: var(--success-soft, #ecfdf5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 16px; }
+        .error-shake { animation: shake 0.4s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card" id="auth-card">
+                <div class="auth-header">
+                    <div class="auth-logo"><img src="assets/images/logo.png" alt="KBOA Logo"></div>
+                    <h1 class="auth-title">Create Account</h1>
+                    <p class="auth-subtitle">Join Knowledge Bridge Online Academy today</p>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- SUCCESS PANEL (shown after registration) -->
+                <div id="success-panel">
+                    <div class="big-check">🎉</div>
+                    <h2 style="font-family:var(--font-display);margin-bottom:8px;">Welcome to KBOA!</h2>
+                    <p style="color:var(--gray-600);margin-bottom:6px;">Your account has been created.</p>
+                    <p style="color:var(--gray-500);font-size:0.9rem;margin-bottom:20px;" id="success-email"></p>
+                    <a href="dashboard.html" class="btn btn-primary btn-block btn-lg">🚀 Go to My Dashboard</a>
+                    <p style="font-size:0.82rem;color:var(--gray-500);margin-top:14px;">📧 Verification email sent — please check your inbox</p>
+                </div>
+
+                <!-- REGISTRATION FORM -->
+                <form class="auth-form" id="register-form" novalidate>
+                    <div class="form-group">
+                        <label for="fullName" class="form-label">Full Name *</label>
+                        <input type="text" id="fullName" class="form-input" placeholder="e.g., Musa Sani" autocomplete="name">
+                        <span class="form-error" id="fullName-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address *</label>
+                        <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+                        <span class="form-error" id="email-error"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" id="phone" class="form-input" placeholder="+234 801 234 5678" autocomplete="tel">
+                            <span class="form-error" id="phone-error"></span>
+                            <p class="phone-hint">💬 For course notifications &amp; support</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="country" class="form-label">Country *</label>
+                            <select id="country" class="form-input">
+                                <option value="">Select country…</option>
+                                <option value="Nigeria" selected>🇳🇬 Nigeria</option>
+                                <option value="Ghana">🇬🇭 Ghana</option>
+                                <option value="Kenya">🇰🇪 Kenya</option>
+                                <option value="Niger">🇳🇪 Niger</option>
+                                <option value="Cameroon">🇨🇲 Cameroon</option>
+                                <option value="Senegal">🇸🇳 Senegal</option>
+                                <option value="Uganda">🇺🇬 Uganda</option>
+                                <option value="Tanzania">🇹🇿 Tanzania</option>
+                                <option value="South Africa">🇿🇦 South Africa</option>
+                                <option value="Other">🌍 Other</option>
+                            </select>
+                            <span class="form-error" id="country-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password *</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="password" class="form-input" placeholder="Min 6 characters" autocomplete="new-password" style="padding-right:44px;">
+                            <button type="button" class="pw-toggle" onclick="togglePw('password', this)">👁️</button>
+                        </div>
+                        <div class="strength-bar">
+                            <div class="strength-seg" id="seg-1"></div>
+                            <div class="strength-seg" id="seg-2"></div>
+                            <div class="strength-seg" id="seg-3"></div>
+                        </div>
+                        <div class="strength-label" id="strength-label"></div>
+                        <span class="form-error" id="password-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" autocomplete="new-password" style="padding-right:44px;">
+                            <button type="button" class="pw-toggle" onclick="togglePw('confirmPassword', this)">👁️</button>
+                        </div>
+                        <span class="form-error" id="confirmPassword-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-check">
+                            <input type="checkbox" id="terms">
+                            <span>I agree to the <a href="#" onclick="event.preventDefault();alert('Terms of Service — full legal text coming soon');">Terms of Service</a> and <a href="#" onclick="event.preventDefault();alert('Privacy Policy — full legal text coming soon');">Privacy Policy</a> *</span>
+                        </label>
+                        <span class="form-error" id="terms-error"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" id="register-btn">
+                        Create Account
+                    </button>
+                </form>
+
+                <div id="form-footer">
+                    <div class="auth-divider">or</div>
+                    <button class="btn btn-outline btn-block" id="google-btn" onclick="signInWithGoogle()">
+                        🔍 Continue with Google
+                    </button>
+                    <div class="auth-links">
+                        Already have an account? <a href="login.html">Login here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/error-reporter.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Password visibility toggle
+        function togglePw(id, btn) {
+            var input = document.getElementById(id);
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.textContent = show ? '🙈' : '👁️';
+        }
+
+        // Password strength meter
+        document.getElementById('password').addEventListener('input', function() {
+            var pw = this.value;
+            var score = 0;
+            if (pw.length >= 6) score++;
+            if (pw.length >= 8 && /[A-Z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
+            var colors = ['#ef4444', '#f59e0b', '#10b981'];
+            var labels = ['Weak password', 'Good password', 'Strong password 💪'];
+            for (var i = 1; i <= 3; i++) {
+                var seg = document.getElementById('seg-' + i);
+                seg.style.background = i <= score ? colors[score - 1] : 'var(--gray-200)';
+            }
+            document.getElementById('strength-label').textContent = pw ? (labels[score - 1] || labels[0]) : '';
+            document.getElementById('strength-label').style.color = pw ? colors[Math.max(0, score - 1)] : '';
+        });
+
+        // Live confirm-match indicator
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            var pw = document.getElementById('password').value;
+            var err = document.getElementById('confirmPassword-error');
+            if (this.value && this.value !== pw) {
+                err.textContent = 'Passwords do not match';
+                err.classList.add('show');
+            } else {
+                err.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

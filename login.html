@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .pw-wrap { position: relative; }
+        .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.05rem; padding: 4px; }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-logo"><img src="assets/images/logo.png" alt="KBOA Logo"></div>
+                    <h1 class="auth-title">Welcome Back</h1>
+                    <p class="auth-subtitle">Login to continue your learning journey</p>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <form class="auth-form" id="login-form" novalidate>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+                        <span class="form-error" id="email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" style="padding-right:44px;">
+                            <button type="button" class="pw-toggle" onclick="togglePw(this)">👁️</button>
+                        </div>
+                        <span class="form-error" id="password-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-check">
+                            <input type="checkbox" id="remember" checked>
+                            <span>Remember me</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+                        Login
+                    </button>
+                </form>
+
+                <div class="auth-links">
+                    <a href="forgot-password.html">Forgot Password?</a>
+                </div>
+
+                <div class="auth-divider">or</div>
+
+                <button class="btn btn-outline btn-block" onclick="signInWithGoogle()">
+                    🔍 Continue with Google
+                </button>
+
+                <div class="auth-links">
+                    Don't have an account? <a href="register.html">Create Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/error-reporter.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        function togglePw(btn) {
+            var input = document.getElementById('password');
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.textContent = show ? '🙈' : '👁️';
+        }
+    </script>
+</body>
+</html>

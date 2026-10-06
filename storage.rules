@@ -1,0 +1,38 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
+    function isInstructor() { return signedIn() && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'instructor'; }
+    function ownsCourse(courseId) { return signedIn() && firestore.get(/databases/(default)/documents/courses/$(courseId)).data.instructorId == request.auth.uid; }
+    function enrolled(courseId) { return signedIn() && exists(/databases/(default)/documents/enrollments/$(request.auth.uid + '_' + courseId)); }
+
+    match /course-assets/{courseId}/{assetType}/{fileName=**} {
+      // Reads are intentionally denied to clients. Students receive short-lived signed URLs
+      // from getCourseAssetUrl only after an enrollment/privilege check.
+      allow read: if false;
+      allow write: if isAdmin() || (isInstructor() && ownsCourse(courseId) && request.resource.size < 500 * 1024 * 1024);
+    }
+
+    match /course-images/{imageId} {
+      allow read: if signedIn();
+      allow write: if isAdmin() || (isInstructor() && request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/.*'));
+    }
+
+    // Legacy paths are blocked for client access. Migrate existing media to course-assets/.
+    match /course-videos/{videoId} {
+      allow read, write: if false;
+    }
+    match /course-materials/{docId} {
+      allow read, write: if false;
+    }
+    match /avatars/{userId}/{imageId} {
+      allow read: if true;
+      allow write: if signedIn() && request.auth.uid == userId && request.resource.size < 2 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+    }
+    match /submissions/{userId}/{fileId} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == userId);
+      allow write: if signedIn() && request.auth.uid == userId && request.resource.size < 50 * 1024 * 1024;
+    }
+  }
+}

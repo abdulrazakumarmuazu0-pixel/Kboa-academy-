@@ -1,0 +1,239 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function role() { return userDoc().data.role; }
+    function isAdmin() { return signedIn() && (role() == 'admin' || request.auth.token.role == 'admin'); }
+    function isInstructor() { return signedIn() && (role() == 'instructor' || request.auth.token.role == 'instructor'); }
+    function isStaff() { return signedIn() && role() in ['admin', 'instructor']; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function courseInstructor(courseId) {
+      return signedIn() && get(/databases/$(database)/documents/courses/$(courseId)).data.instructorId == request.auth.uid;
+    }
+    function ownsEnrollment() { return signedIn() && resource.data.studentId == request.auth.uid; }
+    function ownsNewEnrollment() { return signedIn() && request.resource.data.studentId == request.auth.uid; }
+    function ownsSubmission() { return signedIn() && resource.data.studentId == request.auth.uid; }
+    function ownsNewSubmission() { return signedIn() && request.resource.data.studentId == request.auth.uid; }
+    function assignmentInstructor() {
+      return signedIn() && courseInstructor(get(/databases/$(database)/documents/assignments/$(resource.data.assignmentId)).data.courseId);
+    }
+
+    // User profiles: users may only maintain safe self-service fields.
+    // Privileged fields (role/status/studentId/email) are server/admin controlled.
+    match /users/{userId} {
+      allow read: if isSelf(userId) || isAdmin();
+      allow create: if false;
+      allow update: if isAdmin() || (isSelf(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'fullName', 'phone', 'country', 'photoURL', 'bio', 'preferences',
+          'fcmTokens', 'lastLoginAt', 'updatedAt'
+        ]));
+      allow delete: if isAdmin();
+    }
+
+    // Public catalog is readable only when published. Staff can manage courses.
+    match /courses/{id} {
+      allow read: if isAdmin() || isInstructor() || resource.data.status == 'published';
+      allow create: if isStaff() && request.resource.data.instructorId == request.auth.uid || isAdmin();
+      allow update: if isAdmin() || (isInstructor() && resource.data.instructorId == request.auth.uid
+        && request.resource.data.instructorId == resource.data.instructorId);
+      allow delete: if isAdmin() || (isInstructor() && resource.data.instructorId == request.auth.uid);
+    }
+
+    // Enrollment is a server-created entitlement. Students can only update progress.
+    match /enrollments/{id} {
+      allow read: if isAdmin() || ownsEnrollment() || (isStaff() && courseInstructor(resource.data.courseId));
+      allow create: if isAdmin();
+      allow update: if ownsEnrollment()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'progress', 'completedLessons', 'completedAt', 'lastAccessed'
+        ])
+        && request.resource.data.studentId == resource.data.studentId
+        && request.resource.data.courseId == resource.data.courseId;
+      allow delete: if isAdmin();
+    }
+
+    // Payment records are immutable client-side. Creation is server-only.
+    match /payments/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid);
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Certificates are immutable client-side; public verification is read-only.
+    match /certificates/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid);
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Exam results are server-created after validated submission.
+    match /exam_results/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid)
+        || (isStaff() && courseInstructor(resource.data.courseId));
+      allow create, update, delete: if false;
+    }
+
+    match /exams/{id} {
+      allow read: if signedIn() && (resource.data.status == 'published' || isStaff());
+      allow create: if isStaff() && (isAdmin() || request.resource.data.instructorId == request.auth.uid);
+      allow update: if isAdmin() || (isInstructor() && resource.data.instructorId == request.auth.uid);
+      allow delete: if isAdmin() || (isInstructor() && resource.data.instructorId == request.auth.uid);
+    }
+
+    match /forum_topics/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.authorId == request.auth.uid);
+    }
+    match /forum_replies/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.authorId == request.auth.uid);
+    }
+
+    match /live_classes/{id} {
+      allow read: if signedIn();
+      allow create: if isStaff();
+      allow update: if isAdmin() || (isInstructor() && resource.data.instructorId == request.auth.uid
+        && request.resource.data.instructorId == resource.data.instructorId);
+      allow delete: if isAdmin() || (isInstructor() && resource.data.instructorId == request.auth.uid);
+    }
+    match /live_chat/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    // Staff can manage grades/assignments for their own courses.
+    match /grades/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid) || (isStaff() && courseInstructor(resource.data.courseId));
+      allow write: if isAdmin() || (isInstructor() && courseInstructor(request.resource.data.courseId)
+        && (request.method == 'create' || request.resource.data.courseId == resource.data.courseId));
+    }
+    match /assignments/{id} {
+      allow read: if signedIn();
+      allow create: if isStaff() && (isAdmin() || courseInstructor(request.resource.data.courseId));
+      allow update: if isAdmin() || (isInstructor() && courseInstructor(resource.data.courseId)
+        && request.resource.data.courseId == resource.data.courseId);
+      allow delete: if isAdmin() || (isInstructor() && courseInstructor(resource.data.courseId));
+    }
+    match /submissions/{id} {
+      allow read: if isAdmin() || ownsSubmission() || (isStaff() && courseInstructor(resource.data.courseId));
+      allow create: if ownsNewSubmission();
+      allow update: if isAdmin() || (isStaff() && courseInstructor(resource.data.courseId)) || (ownsSubmission()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['notes', 'fileName', 'fileUrl', 'filePath']));
+      allow delete: if isAdmin();
+    }
+
+    match /payouts/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.instructorId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    // Admissions are created/updated through trusted callable functions.
+    match /applications/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.applicantId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    // Immutable security/audit records.
+    match /audit_logs/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /audit_integrity/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /security_events/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /user_xp/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /xp_events/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+
+    match /notifications/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create, delete: if false;
+      allow update: if false;
+    }
+
+    match /push_tokens/{id} {
+      allow read, write: if false;
+    }
+
+    match /operational_events/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /operational_metrics/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /rate_limits/{id} {
+      allow read, write: if false;
+    }
+    match /idempotency_keys/{id} {
+      allow read, write: if false;
+    }
+    match /backup_verifications/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /alert_dedup/{id} {
+      allow read, write: if false;
+    }
+    match /security_sessions/{id} {
+      allow read, write: if false;
+    }
+    match /jobs/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+    match /event_outbox/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /restore_drills/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+
+    match /authorization_policies/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /analytics_events/{id} {
+      allow read, write: if false;
+    }
+    match /analytics_daily/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /course_search/{id} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /settings/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

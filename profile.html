@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Dashboard Pages Shared Styles */
+        .admin-container { padding-top: 90px; padding-bottom: 40px; }
+        .admin-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
+        .admin-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .admin-search { flex: 1; min-width: 220px; position: relative; }
+        .admin-search input { width: 100%; padding: 12px 15px 12px 45px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; }
+        .admin-search::before { content: '🔍'; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); }
+        .admin-select { padding: 12px 15px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; cursor: pointer; background: white; }
+        .data-table-card { background: white; border-radius: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+        .table-scroll { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .data-table th { background: var(--gray-50); padding: 15px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
+        .data-table td { padding: 15px; border-bottom: 1px solid var(--gray-100); font-size: 0.95rem; color: var(--gray-700); vertical-align: middle; }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .user-cell { display: flex; align-items: center; gap: 12px; }
+        .user-avatar-sm { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: white; flex-shrink: 0; }
+        .user-name-sm { font-weight: 600; color: var(--gray-900); }
+        .user-email-sm { font-size: 0.8rem; color: var(--gray-500); }
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+        .status-badge.active { background: #d1fae5; color: #065f46; }
+        .status-badge.suspended { background: #fee2e2; color: #991b1b; }
+        .status-badge.pending { background: #fef3c7; color: #92400e; }
+        .status-badge.success { background: #d1fae5; color: #065f46; }
+        .status-badge.failed { background: #fee2e2; color: #991b1b; }
+        .status-badge.valid { background: #d1fae5; color: #065f46; }
+        .status-badge.revoked { background: var(--gray-200); color: var(--gray-600); }
+        .action-btns { display: flex; gap: 6px; }
+        .action-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.2s; }
+        .action-btn:hover { background: var(--gray-100); }
+        .action-btn.view:hover { background: #dbeafe; border-color: #93c5fd; }
+        .action-btn.edit:hover { background: #fef3c7; border-color: #fcd34d; }
+        .action-btn.delete:hover { background: #fee2e2; border-color: #fca5a5; }
+        .table-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; flex-wrap: wrap; gap: 12px; }
+        .pagination { display: flex; gap: 6px; }
+        .page-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--gray-300); background: white; cursor: pointer; font-weight: 600; color: var(--gray-600); }
+        .page-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .stat-mini { display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; color: var(--gray-600); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: white; border-radius: 16px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 20px 25px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 25px; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700); font-size: 0.95rem; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; font-size: 1rem; }
+        .form-control:focus { outline: none; border-color: var(--primary-color); }
+        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100); font-size: 0.95rem; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: var(--gray-500); }
+        .detail-value { font-weight: 600; color: var(--gray-900); }
+        .live-tabs { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; }
+        .live-tab { padding: 10px 20px; border-radius: 25px; border: 2px solid var(--gray-200); background: white; font-weight: 600; color: var(--gray-600); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .live-tab.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        @media (max-width: 640px) { .admin-filters { flex-direction: column; } .admin-select { width: 100%; } }
+</style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="assets/images/logo.png" alt="KBOA">
+                </div>
+                <span class="sidebar-title">KBOA</span>
+                <button class="sidebar-close" id="sidebar-close">✕</button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="sidebar-link "><span class="icon">🏠</span><span>Dashboard</span></a></li>
+                    <li><a href="my-courses.html" class="sidebar-link "><span class="icon">📚</span><span>My Courses</span></a></li>
+                    <li><a href="assignments.html" class="sidebar-link "><span class="icon">📝</span><span>Assignments</span></a></li>
+                    <li><a href="quizzes.html" class="sidebar-link "><span class="icon">🧠</span><span>Quizzes</span></a></li>
+                    <li><a href="results.html" class="sidebar-link "><span class="icon">📊</span><span>Results</span></a></li>
+                    <li><a href="certificates.html" class="sidebar-link "><span class="icon">🏆</span><span>Certificates</span></a></li>
+                    <li><a href="payments.html" class="sidebar-link "><span class="icon">💳</span><span>Payments</span></a></li>
+                    <li><a href="profile.html" class="sidebar-link active"><span class="icon">👤</span><span>Profile</span></a></li>
+                    <li><a href="settings.html" class="sidebar-link "><span class="icon">⚙️</span><span>Settings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a>
+            </div>
+        </aside>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menu-toggle">☰</button>
+                    <h1 class="topbar-title">My Profile</h1>
+                </div>
+                <div class="topbar-right">
+                    <button class="notification-btn">🔔<span class="notification-badge"></span></button>
+                    <div class="user-menu">
+                        <button class="user-btn">
+                            <div class="user-avatar">S</div>
+                            <span class="user-name">Student</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <div class="content admin-container" style="padding-top: 25px;">
+                
+                <div class="admin-header-row">
+                    <div>
+                        <h2 class="content-title">👤 My Profile</h2>
+                        <p class="content-subtitle">Manage your personal information</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; align-items: start;">
+                    <!-- Profile Card -->
+                    <div class="analytics-card" style="text-align: center; padding: 30px;">
+                        <div style="position: relative; display: inline-block; margin-bottom: 15px;">
+                            <div class="user-avatar-sm" style="width: 100px; height: 100px; font-size: 2.5rem; background: var(--primary-color); margin: 0 auto;">MS</div>
+                            <button onclick="document.getElementById('avatar-input').click()" style="position: absolute; bottom: 0; right: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--primary-color); color: white; border: 3px solid white; cursor: pointer; font-size: 0.9rem;" title="Change photo">📷</button>
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="alert('Photo updated!')">
+                        </div>
+                        <h3 style="font-weight: 700;">Musa Sani</h3>
+                        <p style="color: var(--gray-500); margin-bottom: 5px;">🎓 Student since Sep 2026</p>
+                        <span class="status-badge active" style="margin-bottom: 20px;">Active Student</span>
+
+                        <div style="text-align: left; border-top: 1px solid var(--gray-100); padding-top: 20px; margin-top: 20px;">
+                            <div class="detail-row"><span class="detail-label">📚 Courses Enrolled</span><span class="detail-value">3</span></div>
+                            <div class="detail-row"><span class="detail-label">✅ Completed</span><span class="detail-value">2</span></div>
+                            <div class="detail-row"><span class="detail-label">🏆 Certificates</span><span class="detail-value">2</span></div>
+                            <div class="detail-row"><span class="detail-label">📊 Overall Average</span><span class="detail-value" style="color: #059669;">84.2%</span></div>
+                            <div class="detail-row"><span class="detail-label">📅 Member Since</span><span class="detail-value">Sep 12, 2026</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Form -->
+                    <div class="analytics-card" style="padding: 30px;">
+                        <h3 style="font-weight: 700; margin-bottom: 20px;">✏️ Edit Information</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" value="Musa Sani">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" value="musa.sani@email.com" style="background: var(--gray-50);" readonly>
+                            <p style="font-size: 0.8rem; color: var(--gray-500); margin-top: 5px;">📧 Email cannot be changed. Contact support.</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" value="+234 801 234 5678">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-control">
+                                <option selected>🇳🇬 Nigeria</option>
+                                <option>🇬🇭 Ghana</option>
+                                <option>🇰🇪 Kenya</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" rows="3" placeholder="Tell us about yourself...">Student passionate about digital skills and AI.</textarea>
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--gray-200); margin: 25px 0;">
+
+                        <h4 style="font-weight: 700; margin-bottom: 15px;">🔒 Change Password</h4>
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" placeholder="Min 6 characters">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" placeholder="Repeat new password">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary btn-block btn-lg" onclick="alert('✅ Profile updated successfully!')">💾 Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebar-overlay');
+            var toggle = document.getElementById('menu-toggle');
+            var close = document.getElementById('sidebar-close');
+            if (toggle) toggle.addEventListener('click', function() { sidebar.classList.add('show'); overlay.classList.add('show'); });
+            if (close) close.addEventListener('click', function() { sidebar.classList.remove('show'); overlay.classList.remove('show'); });
+            if (overlay) overlay.addEventListener('click', function() { sidebar.classList.remove('show'); overlay.classList.remove('show'); });
+
+            var searchInputs = document.querySelectorAll('[data-table-search]');
+            searchInputs.forEach(function(input) {
+                input.addEventListener('input', function() {
+                    var targetId = this.getAttribute('data-table-search');
+                    var filter = this.value.toLowerCase();
+                    document.querySelectorAll('#' + targetId + ' tbody tr').forEach(function(row) {
+                        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+                    });
+                });
+            });
+        });
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        document.querySelectorAll('.modal-overlay').forEach(function(o) {
+            o.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); });
+        });
+    </script>
+    
+</body>
+</html>

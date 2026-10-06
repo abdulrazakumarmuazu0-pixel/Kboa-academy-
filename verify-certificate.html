@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav__logo">
+                <img src="assets/images/logo.png" alt="KBOA Logo" class="logo-img">
+                <span class="logo-text">KBOA</span>
+            </div>
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="index.html" class="nav__link">Home</a></li>
+                    <li class="nav__item"><a href="verify-certificate.html" class="nav__link active-link">Verify Certificate</a></li>
+                </ul>
+                <div class="nav__auth">
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="register.html" class="btn btn-primary">Register</a>
+                </div>
+            </div>
+            <div class="nav__toggle" id="nav-toggle">
+                <span class="hamburger"></span>
+            </div>
+        </nav>
+    </header>
+
+    <section class="section" style="padding-top: 120px;">
+        <div class="container">
+            <div class="section__header">
+                <h1 class="section__title">🔍 Verify Certificate</h1>
+                <p class="section__subtitle">Enter the certificate ID to verify its authenticity</p>
+            </div>
+
+            <div style="max-width: 500px; margin: 0 auto;">
+                <form id="verify-form" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label">Certificate ID</label>
+                        <input type="text" class="form-input" placeholder="KBOA-2026-000001" id="cert-id" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Verify Certificate</button>
+                </form>
+
+                <div id="verify-result" style="margin-top: 30px; display: none;">
+                    <div class="dashboard-section">
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 64px; margin-bottom: 15px;" id="result-icon">✅</div>
+                            <h3 style="color: var(--primary-color); margin-bottom: 10px;" id="result-title">Certificate Verified!</h3>
+                            <p style="color: var(--gray-500);" id="result-message">This certificate is authentic</p>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--gray-200); padding-top: 20px; margin-top: 20px;">
+                            <div style="display: grid; gap: 15px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray-500);">Student Name:</span>
+                                    <strong id="cert-name">-</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray-500);">Course:</span>
+                                    <strong id="cert-course">-</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray-500);">Completion Date:</span>
+                                    <strong id="cert-date">-</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray-500);">Certificate ID:</span>
+                                    <strong id="cert-number">-</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray-500);">Status:</span>
+                                    <span class="badge success" id="cert-status">Valid</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const KBOA_FUNCTIONS_BASE = 'https://us-central1-akboa-academy.cloudfunctions.net';
+        async function kboaCallFunction(name, data) {
+            const response = await fetch(KBOA_FUNCTIONS_BASE + '/' + name, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: data || {} })
+            });
+            const payload = await response.json();
+            if (!response.ok || payload.error) throw new Error(payload?.error?.message || 'Verification service failed');
+            return payload.data;
+        }
+
+        document.getElementById('verify-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const certId = document.getElementById('cert-id').value.trim();
+            const resultDiv = document.getElementById('verify-result');
+
+            // Show loading
+            resultDiv.style.display = 'block';
+            document.getElementById('result-icon').textContent = '⏳';
+            document.getElementById('result-title').textContent = 'Verifying...';
+            document.getElementById('result-message').textContent = 'Please wait';
+
+            try {
+                // Verify through the trusted server function.
+                const certData = await kboaCallFunction('verifyCertificate', { certificateId: certId });
+
+                if (certData && certData.valid) {
+
+                    // Show success
+                    document.getElementById('result-icon').textContent = '✅';
+                    document.getElementById('result-title').textContent = 'Certificate Verified!';
+                    document.getElementById('result-message').textContent = 'This certificate is authentic and valid';
+                    document.getElementById('cert-name').textContent = certData.studentName || 'N/A';
+                    document.getElementById('cert-course').textContent = certData.courseName || 'N/A';
+                    document.getElementById('cert-date').textContent = certData.completionDate || 'N/A';
+                    document.getElementById('cert-number').textContent = certId;
+                    document.getElementById('cert-status').textContent = 'Valid';
+                } else {
+                    // Show not found
+                    document.getElementById('result-icon').textContent = '❌';
+                    document.getElementById('result-title').textContent = 'Certificate Not Found';
+                    document.getElementById('result-message').textContent = 'Please check the certificate ID and try again';
+                    document.getElementById('cert-name').textContent = '-';
+                    document.getElementById('cert-course').textContent = '-';
+                    document.getElementById('cert-date').textContent = '-';
+                    document.getElementById('cert-number').textContent = certId;
+                    document.getElementById('cert-status').textContent = 'Invalid';
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                document.getElementById('result-icon').textContent = '⚠️';
+                document.getElementById('result-title').textContent = 'Error';
+                document.getElementById('result-message').textContent = 'An error occurred. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>

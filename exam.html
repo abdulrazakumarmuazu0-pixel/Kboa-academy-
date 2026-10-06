@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Examination - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Exam Specific Styles */
+        .exam-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .exam-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+        }
+
+        .exam-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .exam-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .exam-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .timer {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .timer.warning {
+            background: var(--warning-color);
+        }
+
+        .timer.danger {
+            background: var(--danger-color);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .progress-bar-exam {
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill-exam {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-300);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-dot:hover {
+            border-color: var(--primary-color);
+        }
+
+        .question-dot.answered {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .question-dot.current {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+        }
+
+        .question-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-color);
+            background: var(--gray-50);
+        }
+
+        .option-item.selected {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected .option-letter {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .exam-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .exam-results {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            position: relative;
+        }
+
+        .score-circle.passed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .score-circle.failed {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .result-status {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-status.passed {
+            color: #059669;
+        }
+
+        .result-status.failed {
+            color: #dc2626;
+        }
+
+        .result-details {
+            background: var(--gray-50);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .review-question {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--gray-300);
+        }
+
+        .review-question.correct {
+            border-left-color: #10b981;
+        }
+
+        .review-question.incorrect {
+            border-left-color: #ef4444;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .review-status {
+            font-weight: 600;
+        }
+
+        .review-status.correct {
+            color: #059669;
+        }
+
+        .review-status.incorrect {
+            color: #dc2626;
+        }
+
+        .your-answer {
+            padding: 10px;
+            background: var(--gray-100);
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .your-answer.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .your-answer.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .correct-answer {
+            padding: 10px;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .start-exam-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .exam-instructions {
+            background: var(--gray-50);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .exam-instructions ul {
+            padding-left: 20px;
+        }
+
+        .exam-instructions li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 15px;
+            }
+
+            .exam-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .timer {
+                align-self: center;
+            }
+
+            .question-card {
+                padding: 20px;
+            }
+
+            .exam-navigation {
+                flex-direction: column;
+            }
+
+            .exam-navigation .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav__logo">
+                <img src="assets/images/logo.png" alt="KBOA Logo" class="logo-img">
+                <span class="logo-text">KBOA</span>
+            </div>
+            <div class="nav__auth">
+                <span id="student-name">Student</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Exam Container -->
+    <main class="exam-container" style="padding-top: 100px;">
+
+        <!-- Start Exam Screen -->
+        <div id="start-screen" class="start-exam-screen">
+            <div class="dashboard-section">
+                <h1 style="font-size: 2rem; margin-bottom: 10px;">📝 Final Examination</h1>
+                <h2 style="color: var(--primary-color); margin-bottom: 20px;" id="exam-course-title">Mathematics</h2>
+
+                <div class="exam-instructions">
+                    <h3 style="margin-bottom: 15px;">📋 Exam Instructions:</h3>
+                    <ul>
+                        <li>This exam contains <strong>50 questions</strong></li>
+                        <li>Time limit: <strong>60 minutes</strong></li>
+                        <li>All questions are multiple choice</li>
+                        <li>You can navigate between questions</li>
+                        <li>Exam will auto-submit when time expires</li>
+                        <li>Pass mark: <strong>70%</strong></li>
+                        <li>Results will be displayed immediately after submission</li>
+                    </ul>
+                </div>
+
+                <div style="background: var(--gray-100); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                        <div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">50</div>
+                            <div style="color: var(--gray-500);">Questions</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">60</div>
+                            <div style="color: var(--gray-500);">Minutes</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">70%</div>
+                            <div style="color: var(--gray-500);">Pass Mark</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-lg" onclick="startExam()" style="padding: 15px 40px;">
+                    🚀 Start Exam
+                </button>
+            </div>
+        </div>
+
+        <!-- Exam Screen -->
+        <div id="exam-screen" style="display: none;">
+            <!-- Exam Header -->
+            <div class="exam-header">
+                <div class="exam-info">
+                    <div>
+                        <div class="exam-title" id="exam-title">Final Examination - Mathematics</div>
+                        <div class="exam-meta">
+                            <span>Question <span id="current-q">1</span> of <span id="total-q">50</span></span>
+                            <span>Answered: <span id="answered-count">0</span></span>
+                        </div>
+                    </div>
+                    <div class="timer" id="timer">60:00</div>
+                </div>
+                <div class="progress-bar-exam">
+                    <div class="progress-fill-exam" id="exam-progress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Question Navigation -->
+            <div class="question-nav" id="question-nav">
+                <!-- Question dots will be generated here -->
+            </div>
+
+            <!-- Question Card -->
+            <div class="question-card" id="question-card">
+                <div class="question-number">Question <span id="q-number">1</span></div>
+                <div class="question-text" id="q-text">
+                    What is the value of x in the equation 2x + 6 = 14?
+                </div>
+                <div class="options-list" id="options-list">
+                    <!-- Options will be generated here -->
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="exam-navigation">
+                <button class="btn btn-outline" id="prev-btn" onclick="previousQuestion()">
+                    ← Previous
+                </button>
+                <button class="btn btn-outline" onclick="markForReview()">
+                    🚩 Mark for Review
+                </button>
+                <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">
+                    Next →
+                </button>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-danger btn-lg" onclick="submitExam()">
+                    📤 Submit Exam
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" style="display: none;">
+            <div class="dashboard-section exam-results">
+                <div class="score-circle passed" id="score-circle">
+                    <span id="score-percentage">78%</span>
+                </div>
+
+                <div class="result-status passed" id="result-status">PASSED 🎉</div>
+                <p style="color: var(--gray-500); margin-bottom: 20px;" id="result-message">
+                    Congratulations! You have successfully passed the exam.
+                </p>
+
+                <div class="result-details">
+                    <div class="result-row">
+                        <span>Total Questions</span>
+                        <strong id="result-total">50</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Correct Answers</span>
+                        <strong style="color: #059669;" id="result-correct">39</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Wrong Answers</span>
+                        <strong style="color: #dc2626;" id="result-wrong">11</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Unanswered</span>
+                        <strong id="result-unanswered">0</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Time Used</span>
+                        <strong id="result-time">45:30</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Pass Mark</span>
+                        <strong>70%</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Your Score</span>
+                        <strong style="color: var(--primary-color);" id="result-score">78%</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="viewReview()">
+                        📋 Review Answers
+                    </button>
+                    <button class="btn btn-outline" onclick="retakeExam()">
+                        🔄 Retake Exam
+                    </button>
+                    <button class="btn btn-outline" onclick="backToDashboard()">
+                        🏠 Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Review Section -->
+            <div id="review-section" style="display: none; margin-top: 30px;">
+                <h3 style="margin-bottom: 20px;">📋 Answer Review</h3>
+                <div id="review-questions">
+                    <!-- Review questions will be generated here -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/exams/exam-system.js"></script>
+</body>
+</html>

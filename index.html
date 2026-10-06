@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBOA - Knowledge Bridge Online Academy</title>
+    <meta name="description" content="Learn practical skills, improve your education, and build your future from anywhere.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav__logo">
+                <img src="assets/images/logo.png" alt="KBOA Logo" class="logo-img">
+                <span class="logo-text">KBOA</span>
+            </div>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="index.html" class="nav__link active-link">Home</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="courses.html" class="nav__link">Courses</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#about" class="nav__link">About Us</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#instructors" class="nav__link">Instructors</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#pricing" class="nav__link">Pricing</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#contact" class="nav__link">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav__auth">
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="register.html" class="btn btn-primary">Register</a>
+                </div>
+            </div>
+
+            <div class="nav__toggle" id="nav-toggle">
+                <span class="hamburger"></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero__container container grid">
+            <div class="hero__content">
+                <h1 class="hero__title">
+                    Learn Today.<br>
+                    <span class="highlight">Grow Tomorrow.</span>
+                </h1>
+                <p class="hero__description">
+                    Gain practical skills, improve your education, and build your future from anywhere.
+                </p>
+                <div class="hero__buttons">
+                    <a href="courses.html" class="btn btn-primary btn-lg">Explore Courses</a>
+                    <a href="register.html" class="btn btn-outline btn-lg">Create Account</a>
+                </div>
+                <div class="hero__features">
+                    <div class="feature">
+                        <span class="feature-icon">📱</span>
+                        <span>Learn Anywhere</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💰</span>
+                        <span>Affordable</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🛠️</span>
+                        <span>Practical</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🏆</span>
+                        <span>Certificate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero__img">
+                <img src="assets/images/hero-img.png" alt="Online Learning" class="hero-image">
+            </div>
+        </div>
+        <div class="hero__wave">
+            <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#f8f9fa" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats section">
+        <div class="container">
+            <div class="stats__grid grid">
+                <div class="stat__card">
+                    <h3 class="stat__number" data-count="5000">0</h3>
+                    <p class="stat__label">Students</p>
+                </div>
+                <div class="stat__card">
+                    <h3 class="stat__number" data-count="50">0</h3>
+                    <p class="stat__label">Courses</p>
+                </div>
+                <div class="stat__card">
+                    <h3 class="stat__number" data-count="20">0</h3>
+                    <p class="stat__label">Instructors</p>
+                </div>
+                <div class="stat__card">
+                    <h3 class="stat__number" data-count="95">0</h3>
+                    <p class="stat__label">Success Rate %</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories section" id="categories">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title">Course Categories</h2>
+                <p class="section__subtitle">Choose from our wide range of practical courses</p>
+            </div>
+            <div class="categories__grid grid">
+                <a href="courses.html?category=academic" class="category__card">
+                    <div class="category__icon">📚</div>
+                    <h3 class="category__title">Academic</h3>
+                    <p class="category__description">English, Mathematics, Basic Science</p>
+                    <span class="category__count">12 Courses</span>
+                </a>
+                <a href="courses.html?category=digital" class="category__card">
+                    <div class="category__icon">💻</div>
+                    <h3 class="category__title">Digital Skills</h3>
+                    <p class="category__description">Computer, Microsoft Office, Graphic Design</p>
+                    <span class="category__count">15 Courses</span>
+                </a>
+                <a href="courses.html?category=business" class="category__card">
+                    <div class="category__icon">💼</div>
+                    <h3 class="category__title">Business</h3>
+                    <p class="category__description">Entrepreneurship, Digital Marketing</p>
+                    <span class="category__count">8 Courses</span>
+                </a>
+                <a href="courses.html?category=tech" class="category__card">
+                    <div class="category__icon">🤖</div>
+                    <h3 class="category__title">AI & Tech</h3>
+                    <p class="category__description">Web Design, AI & ChatGPT</p>
+                    <span class="category__count">10 Courses</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Courses -->
+    <section class="featured section" id="featured">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title">Featured Courses</h2>
+                <p class="section__subtitle">Start learning with our most popular courses</p>
+            </div>
+            <div class="courses__grid grid" id="featured-courses">
+                <!-- Courses will be loaded dynamically -->
+                <div class="course__card skeleton">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text"></div>
+                </div>
+                <div class="course__card skeleton">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text"></div>
+                </div>
+                <div class="course__card skeleton">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text"></div>
+                </div>
+            </div>
+            <div class="section__footer">
+                <a href="courses.html" class="btn btn-outline">View All Courses</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why section" id="about">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title">Why Choose KBOA?</h2>
+                <p class="section__subtitle">We provide quality education accessible to everyone</p>
+            </div>
+            <div class="why__grid grid">
+                <div class="why__card">
+                    <div class="why__icon">🎯</div>
+                    <h3>Practical Learning</h3>
+                    <p>Learn by doing with real-world projects and assignments</p>
+                </div>
+                <div class="why__card">
+                    <div class="why__icon">👨‍🏫</div>
+                    <h3>Expert Instructors</h3>
+                    <p>Learn from experienced professionals in their fields</p>
+                </div>
+                <div class="why__card">
+                    <div class="why__icon">📜</div>
+                    <h3>Certificates</h3>
+                    <p>Earn verifiable certificates upon course completion</p>
+                </div>
+                <div class="why__card">
+                    <div class="why__icon">💳</div>
+                    <h3>Affordable</h3>
+                    <p>Quality education at prices everyone can afford</p>
+                </div>
+                <div class="why__card">
+                    <div class="why__icon">📱</div>
+                    <h3>Mobile First</h3>
+                    <p>Learn on any device, even with low internet connection</p>
+                </div>
+                <div class="why__card">
+                    <div class="why__icon">🌍</div>
+                    <h3>Learn Anywhere</h3>
+                    <p>Access your courses from anywhere in the world</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructors Section -->
+    <section class="instructors section" id="instructors">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title">Meet Our Instructors</h2>
+                <p class="section__subtitle">Learn from the best professionals</p>
+            </div>
+            <div class="instructors__grid grid">
+                <div class="instructor__card">
+                    <div class="instructor__img">
+                        <img src="assets/images/instructor-1.jpg" alt="Instructor">
+                    </div>
+                    <h3 class="instructor__name">Ahmad Bello</h3>
+                    <p class="instructor__field">Digital Skills & Computer</p>
+                    <div class="instructor__stats">
+                        <span>📚 5 Courses</span>
+                        <span>👥 1.2k Students</span>
+                    </div>
+                </div>
+                <div class="instructor__card">
+                    <div class="instructor__img">
+                        <img src="assets/images/instructor-2.jpg" alt="Instructor">
+                    </div>
+                    <h3 class="instructor__name">Fatima Hassan</h3>
+                    <p class="instructor__field">English & Communication</p>
+                    <div class="instructor__stats">
+                        <span>📚 3 Courses</span>
+                        <span>👥 800 Students</span>
+                    </div>
+                </div>
+                <div class="instructor__card">
+                    <div class="instructor__img">
+                        <img src="assets/images/instructor-3.jpg" alt="Instructor">
+                    </div>
+                    <h3 class="instructor__name">Ibrahim Musa</h3>
+                    <p class="instructor__field">Mathematics & Science</p>
+                    <div class="instructor__stats">
+                        <span>📚 4 Courses</span>
+                        <span>👥 950 Students</span>
+                    </div>
+                </div>
+                <div class="instructor__card">
+                    <div class="instructor__img">
+                        <img src="assets/images/instructor-4.jpg" alt="Instructor">
+                    </div>
+                    <h3 class="instructor__name">Aisha Muhammad</h3>
+                    <p class="instructor__field">Business & Marketing</p>
+                    <div class="instructor__stats">
+                        <span>📚 6 Courses</span>
+                        <span>👥 1.5k Students</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing section" id="pricing">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title">Simple Pricing</h2>
+                <p class="section__subtitle">Choose the plan that fits your needs</p>
+            </div>
+            <div class="pricing__grid grid">
+                <div class="pricing__card">
+                    <h3 class="pricing__title">Free</h3>
+                    <div class="pricing__price">
+                        <span class="currency">₦</span>
+                        <span class="amount">0</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="pricing__features">
+                        <li>✓ Access to free courses</li>
+                        <li>✓ Community support</li>
+                        <li>✓ Basic quizzes</li>
+                        <li>✗ Certificates</li>
+                        <li>✗ Live classes</li>
+                    </ul>
+                    <a href="register.html" class="btn btn-outline btn-block">Get Started</a>
+                </div>
+                <div class="pricing__card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3 class="pricing__title">Premium</h3>
+                    <div class="pricing__price">
+                        <span class="currency">₦</span>
+                        <span class="amount">5,000</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="pricing__features">
+                        <li>✓ All courses access</li>
+                        <li>✓ Certificates</li>
+                        <li>✓ Assignments & feedback</li>
+                        <li>✓ Priority support</li>
+                        <li>✓ Live classes</li>
+                    </ul>
+                    <a href="register.html" class="btn btn-primary btn-block">Subscribe Now</a>
+                </div>
+                <div class="pricing__card">
+                    <h3 class="pricing__title">Annual</h3>
+                    <div class="pricing__price">
+                        <span class="currency">₦</span>
+                        <span class="amount">50,000</span>
+                        <span class="period">/year</span>
+                    </div>
+                    <ul class="pricing__features">
+                        <li>✓ Everything in Premium</li>
+                        <li>✓ 2 months free</li>
+                        <li>✓ Download materials</li>
+                        <li>✓ 1-on-1 mentoring</li>
+                        <li>✓ Job placement support</li>
+                    </ul>
+                    <a href="register.html" class="btn btn-outline btn-block">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta section">
+        <div class="container">
+            <div class="cta__box">
+                <h2>Ready to Start Your Learning Journey?</h2>
+                <p>Join thousands of students building their future with KBOA</p>
+                <div class="cta__buttons">
+                    <a href="register.html" class="btn btn-white btn-lg">Create Free Account</a>
+                    <a href="courses.html" class="btn btn-outline-white btn-lg">Browse Courses</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer__grid grid">
+                <div class="footer__content">
+                    <div class="footer__logo">
+                        <img src="assets/images/logo.png" alt="KBOA Logo">
+                        <span>KBOA</span>
+                    </div>
+                    <p class="footer__description">
+                        Knowledge Bridge Online Academy - Empowering you with practical skills for a better future.
+                    </p>
+                    <div class="footer__social">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">📸</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+                <div class="footer__links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer__links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer__links">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 info@kboa.edu.ng</li>
+                        <li>📞 +234 800 000 0000</li>
+                        <li>📍 Sokoto, Nigeria</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 KBOA - Knowledge Bridge Online Academy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/native-bridge.js"></script>
+</body>
+</html>

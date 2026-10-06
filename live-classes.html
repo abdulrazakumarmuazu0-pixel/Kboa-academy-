@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Classes - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Live Classes Styles */
+        .live-container {
+            padding-top: 90px;
+            padding-bottom: 40px;
+        }
+
+        .live-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .live-tab {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--gray-200);
+            background: white;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .live-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .live-class-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .live-class-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            color: white;
+            position: relative;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ef4444;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .live-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .upcoming-badge {
+            background: var(--secondary-color);
+        }
+
+        .recorded-badge {
+            background: var(--gray-500);
+        }
+
+        .live-class-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .live-class-instructor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .live-class-body {
+            padding: 25px;
+        }
+
+        .live-class-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 18px;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .live-class-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-class-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .countdown {
+            background: var(--gray-50);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            font-family: monospace;
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .calendar-widget {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-day-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            padding: 8px 0;
+        }
+
+        .calendar-day {
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: var(--gray-100);
+        }
+
+        .calendar-day.has-class {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .calendar-day.today {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-day.selected {
+            outline: 2px solid var(--secondary-color);
+        }
+
+        .class-dot {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+        }
+
+        .live-classroom {
+            background: #1f2937;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .classroom-header {
+            background: #111827;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .classroom-video {
+            aspect-ratio: 16/9;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .classroom-controls {
+            background: #111827;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #374151;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: #4b5563;
+        }
+
+        .control-btn.mic-off,
+        .control-btn.cam-off {
+            background: #ef4444;
+        }
+
+        .control-btn.end-call {
+            background: #ef4444;
+            width: 60px;
+            border-radius: 25px;
+        }
+
+        .chat-panel {
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 20px;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+        }
+
+        .chat-message-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+            align-items: center;
+        }
+
+        .chat-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .chat-sender {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .chat-time {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+        }
+
+        .chat-text {
+            padding-left: 40px;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-300);
+            border-radius: 25px;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .participants-list {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .participant-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .participant-item:last-child {
+            border-bottom: none;
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--gray-600);
+        }
+
+        .participant-info {
+            flex: 1;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .participant-role {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        .participant-status {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-icon {
+            font-size: 0.9rem;
+        }
+
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .two-col-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+
+            .live-class-card {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .two-col-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav__logo">
+                <img src="assets/images/logo.png" alt="KBOA Logo" class="logo-img">
+                <span class="logo-text">KBOA</span>
+            </div>
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="dashboard.html" class="nav__link">Dashboard</a></li>
+                    <li class="nav__item"><a href="my-courses.html" class="nav__link">My Courses</a></li>
+                    <li class="nav__item"><a href="live-classes.html" class="nav__link active-link">Live Classes</a></li>
+                    <li class="nav__item"><a href="forum.html" class="nav__link">Forum</a></li>
+                </ul>
+                <div class="nav__auth">
+                    <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+                </div>
+            </div>
+            <div class="nav__toggle" id="nav-toggle">
+                <span class="hamburger"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="live-container">
+        <div class="container">
+            <div class="content-header">
+                <h1 class="content-title">🎥 Live Classes</h1>
+                <p class="content-subtitle">Join live sessions with your instructors</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="live-tabs">
+                <button class="live-tab active" data-tab="upcoming">📅 Upcoming</button>
+                <button class="live-tab" data-tab="live">🔴 Live Now</button>
+                <button class="live-tab" data-tab="recorded">🎬 Recorded</button>
+                <button class="live-tab" data-tab="calendar">🗓️ Schedule</button>
+            </div>
+
+            <!-- Live Now Tab -->
+            <div id="tab-live" class="live-tab-content">
+                <!-- Live Classroom -->
+                <div class="two-col-grid" style="margin-bottom: 25px;">
+                    <div class="live-classroom">
+                        <div class="classroom-header">
+                            <div>
+                                <strong>AI & ChatGPT — Week 3 Live Session</strong>
+                                <div style="font-size: 0.85rem; opacity: 0.7;">Ahmad Bello • 45 students joined</div>
+                            </div>
+                            <span class="live-badge">LIVE</span>
+                        </div>
+                        <div class="classroom-video">
+                            <div style="font-size: 4rem;">👨‍🏫</div>
+                            <p>Ahmad Bello is presenting</p>
+                            <button class="btn btn-white btn-lg" onclick="joinClass()">Join with Video</button>
+                        </div>
+                        <div class="classroom-controls">
+                            <button class="control-btn" id="mic-btn" onclick="toggleMic()" title="Microphone">🎤</button>
+                            <button class="control-btn" id="cam-btn" onclick="toggleCam()" title="Camera">📹</button>
+                            <button class="control-btn" onclick="shareScreen()" title="Share Screen">🖥️</button>
+                            <button class="control-btn" onclick="raiseHand()" title="Raise Hand">✋</button>
+                            <button class="control-btn end-call" onclick="leaveClass()" title="Leave">📞</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Chat -->
+                    <div class="chat-panel">
+                        <div class="chat-header">
+                            <span>💬 Live Chat</span>
+                            <button class="btn btn-sm btn-outline" onclick="switchToParticipants()">👥 45</button>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message">
+                                <div class="chat-message-header">
+                                    <div class="chat-avatar">AB</div>
+                                    <span class="chat-sender">Ahmad Bello</span>
+                                    <span class="chat-time">2:00 PM</span>
+                                </div>
+                                <div class="chat-text">Welcome everyone! Let's start with questions from last week.</div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="chat-message-header">
+                                    <div class="chat-avatar" style="background: #10b981;">FM</div>
+                                    <span class="chat-sender">Fatima M.</span>
+                                    <span class="chat-time">2:02 PM</span>
+                                </div>
+                                <div class="chat-text">Sir, can you explain prompt chaining again?</div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="chat-message-header">
+                                    <div class="chat-avatar" style="background: #f59e0b;">MS</div>
+                                    <span class="chat-sender">Musa S.</span>
+                                <span class="chat-time">2:03 PM</span>
+                                </div>
+                                <div class="chat-text">Yes please, that part was confusing 😅</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Type a message..." id="chat-input">
+                            <button class="btn btn-primary" onclick="sendMessage()">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Tab -->
+            <div id="tab-upcoming" class="live-tab-content" style="display: none;">
+                <div class="live-class-card">
+                    <div class="live-class-banner">
+                        <span class="live-badge upcoming-badge">📅 UPCOMING</span>
+                        <h3 class="live-class-title">Advanced Prompt Engineering</h3>
+                        <div class="live-class-instructor">
+                            <span>👨‍🏫 Ahmad Bello • AI & ChatGPT Mastery</span>
+                        </div>
+                    </div>
+                    <div class="live-class-body">
+                        <div class="countdown">
+                            <p style="margin-bottom: 10px; color: var(--gray-600);">Starts in:</p>
+                            <div class="countdown-timer">
+                                <div class="countdown-item">
+                                    <div class="countdown-value">2</div>
+                                    <div class="countdown-label">Days</div>
+                                </div>
+                                <div class="countdown-item">
+                                    <div class="countdown-value">14</div>
+                                    <div class="countdown-label">Hours</div>
+                                </div>
+                                <div class="countdown-item">
+                                    <div class="countdown-value">35</div>
+                                    <div class="countdown-label">Mins</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="live-class-meta">
+                            <span>📅 Oct 4, 2026</span>
+                            <span>🕐 4:00 PM WAT</span>
+                            <span>⏱️ 90 mins</span>
+                        </div>
+                        <div class="live-class-actions">
+                            <button class="btn btn-primary">🔔 Set Reminder</button>
+                            <button class="btn btn-outline">📅 Add to Calendar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="live-class-card">
+                    <div class="live-class-banner" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <span class="live-badge upcoming-badge">📅 UPCOMING</span>
+                        <h3 class="live-class-title">Excel Formulas Masterclass</h3>
+                        <div class="live-class-instructor">
+                            <span>👩‍🏫 Fatima Hassan • Microsoft Office</span>
+                        </div>
+                    </div>
+                    <div class="live-class-body">
+                        <div class="live-class-meta">
+                            <span>📅 Oct 6, 2026</span>
+                            <span>🕐 2:00 PM WAT</span>
+                            <span>⏱️ 60 mins</span>
+                            <span>👥 120 registered</span>
+                        </div>
+                        <p style="color: var(--gray-600); margin-bottom: 15px;">Learn advanced Excel formulas including VLOOKUP, INDEX/MATCH, and pivot tables.</p>
+                        <div class="live-class-actions">
+                            <button class="btn btn-primary">🔔 Set Reminder</button>
+                            <button class="btn btn-outline">📅 Add to Calendar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="live-class-card">
+                    <div class="live-class-banner" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <span class="live-badge upcoming-badge">📅 UPCOMING</span>
+                        <h3 class="live-class-title">Web Design Q&A Session</h3>
+                        <div class="live-class-instructor">
+                            <span>👨‍🏫 Ibrahim Musa • Web Design Fundamentals</span>
+                        </div>
+                    </div>
+                    <div class="live-class-body">
+                        <div class="live-class-meta">
+                            <span>📅 Oct 8, 2026</span>
+                            <span>🕐 5:30 PM WAT</span>
+                            <span>⏱️ 45 mins</span>
+                        </div>
+                        <p style="color: var(--gray-600); margin-bottom: 15px;">Bring your questions about HTML, CSS, and responsive design.</p>
+                        <div class="live-class-actions">
+                            <button class="btn btn-primary">🔔 Set Reminder</button>
+                            <button class="btn btn-outline">📅 Add to Calendar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recorded Tab -->
+            <div id="tab-recorded" class="live-tab-content" style="display: none;">
+                <div class="courses__grid grid">
+                    <div class="course__card">
+                        <div class="course__img">
+                            <img src="assets/images/course-ai.jpg" alt="Recording">
+                            <span class="course__badge">🎬 RECORDED</span>
+                        </div>
+                        <div class="course__content">
+                            <span class="course__category">AI & ChatGPT Mastery</span>
+                            <h3 class="course__title">Week 1: Introduction to AI (Live Session)</h3>
+                            <div class="course__meta">
+                                <span>⏱️ 1:24:30</span>
+                                <span>👥 340 views</span>
+                                <span>📅 Sep 20, 2026</span>
+                            </div>
+                            <div class="course__footer">
+                                <a href="#" class="btn btn-primary btn-sm">▶ Watch</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course__card">
+                        <div class="course__img">
+                            <img src="assets/images/course-office.jpg" alt="Recording">
+                            <span class="course__badge">🎬 RECORDED</span>
+                        </div>
+                        <div class="course__content">
+                            <span class="course__category">Microsoft Office</span>
+                            <h3 class="course__title">Word Formatting Workshop</h3>
+                            <div class="course__meta">
+                                <span>⏱️ 58:15</span>
+                                <span>👥 520 views</span>
+                                <span>📅 Sep 22, 2026</span>
+                            </div>
+                            <div class="course__footer">
+                                <a href="#" class="btn btn-primary btn-sm">▶ Watch</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course__card">
+                        <div class="course__img">
+                            <img src="assets/images/course-web.jpg" alt="Recording">
+                            <span class="course__badge">🎬 RECORDED</span>
+                        </div>
+                        <div class="course__content">
+                            <span class="course__category">Web Design</span>
+                            <h3 class="course__title">CSS Flexbox Deep Dive</h3>
+                            <div class="course__meta">
+                                <span>⏱️ 1:05:42</span>
+                                <span>👥 280 views</span>
+                                <span>📅 Sep 25, 2026</span>
+                            </div>
+                            <div class="course__footer">
+                                <a href="#" class="btn btn-primary btn-sm">▶ Watch</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Tab -->
+            <div id="tab-calendar" class="live-tab-content" style="display: none;">
+                <div class="two-col-grid">
+                    <div class="calendar-widget">
+                        <div class="calendar-header">
+                            <button class="btn btn-sm btn-outline" onclick="prevMonth()">←</button>
+                            <h3 id="calendar-month">October 2026</h3>
+                            <button class="btn btn-sm btn-outline" onclick="nextMonth()">→</button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day-header">Su</div>
+                            <div class="calendar-day-header">Mo</div>
+                            <div class="calendar-day-header">Tu</div>
+                            <div class="calendar-day-header">We</div>
+                            <div class="calendar-day-header">Th</div>
+                            <div class="calendar-day-header">Fr</div>
+                            <div class="calendar-day-header">Sa</div>
+                            <!-- Calendar days populated by JS -->
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                            <div class="calendar-day">1</div>
+                            <div class="calendar-day">2</div>
+                            <div class="calendar-day today has-class">3<span class="class-dot"></span></div>
+                            <div class="calendar-day has-class">4<span class="class-dot"></span></div>
+                            <div class="calendar-day">5</div>
+                            <div class="calendar-day has-class">6<span class="class-dot"></span></div>
+                            <div class="calendar-day">7</div>
+                            <div class="calendar-day has-class">8<span class="class-dot"></span></div>
+                            <div class="calendar-day">9</div>
+                            <div class="calendar-day">10</div>
+                            <div class="calendar-day">11</div>
+                            <div class="calendar-day has-class">12<span class="class-dot"></span></div>
+                            <div class="calendar-day">13</div>
+                            <div class="calendar-day">14</div>
+                            <div class="calendar-day">15</div>
+                            <div class="calendar-day">16</div>
+                            <div class="calendar-day">17</div>
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day has-class">19<span class="class-dot"></span></div>
+                            <div class="calendar-day">20</div>
+                            <div class="calendar-day">21</div>
+                            <div class="calendar-day">22</div>
+                            <div class="calendar-day">23</div>
+                            <div class="calendar-day">24</div>
+                            <div class="calendar-day">25</div>
+                            <div class="calendar-day">26</div>
+                            <div class="calendar-day">27</div>
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                            <div class="calendar-day">31</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="margin-bottom: 15px;">📅 Oct 4 Classes</h3>
+                        <div class="live-class-card" style="grid-template-columns: 1fr;">
+                            <div class="live-class-body">
+                                <span class="live-badge upcoming-badge">📅 UPCOMING</span>
+                                <h4 style="margin: 10px 0;">Advanced Prompt Engineering</h4>
+                                <div class="live-class-meta" style="margin-bottom: 15px;">
+                                    <span>🕐 4:00 PM</span>
+                                    <span>⏱️ 90 mins</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--gray-600);">Ahmad Bello</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-block">Join All Today's Classes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/live/live-classes.js"></script>
+    <script src="js/native-bridge.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    auth.onAuthStateChanged(async function(user) {
+        if (!user) return;
+        var now = new Date();
+        var snap = await db.collection('live_classes').where('startTime', '>=', now).orderBy('startTime','asc').limit(10).get();
+        var container = document.getElementById('tab-upcoming');
+        if (!container || snap.empty) return;
+        container.innerHTML = '';
+        snap.docs.forEach(function(d) {
+            var c = d.data();
+            var when = c.startTime && c.startTime.toDate ? c.startTime.toDate() : new Date();
+            var div = document.createElement('div');
+            div.className = 'live-class-card';
+            div.innerHTML =
+                '<div class="live-class-banner"><span class="live-badge upcoming-badge">📅 UPCOMING</span>'
+                + '<h3 class="live-class-title">'+esc(c.title)+'</h3>'
+                + '<div class="live-class-instructor"><span>👨‍🏫 '+esc(c.instructorName||'Instructor')+'</span></div></div>'
+                + '<div class="live-class-body"><div class="live-class-meta">'
+                + '<span>📅 '+when.toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'})+'</span>'
+                + '<span>🕐 '+when.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'})+'</span>'
+                + '<span>⏱️ '+(c.duration||60)+' mins</span></div>'
+                + '<div class="live-class-actions"><a href="'+(c.meetingLink||'#')+'" target="_blank" class="btn btn-primary">🎥 Join Link</a></div></div>';
+            container.appendChild(div);
+        });
+    });
+});
+function esc(t){var d=document.createElement('div');d.textContent=String(t==null?'':t);return d.innerHTML;}
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="assets/images/logo.png" alt="KBOA">
+                </div>
+                <span class="sidebar-title">KBOA</span>
+                <button class="sidebar-close" id="sidebar-close">
+                    ✕
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html" class="sidebar-link active">
+                            <span class="icon">🏠</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="my-courses.html" class="sidebar-link">
+                            <span class="icon">📚</span>
+                            <span>My Courses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="assignments.html" class="sidebar-link">
+                            <span class="icon">📝</span>
+                            <span>Assignments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="quizzes.html" class="sidebar-link">
+                            <span class="icon">🧠</span>
+                            <span>Quizzes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="results.html" class="sidebar-link">
+                            <span class="icon">📊</span>
+                            <span>Results</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="certificates.html" class="sidebar-link">
+                            <span class="icon">🏆</span>
+                            <span>Certificates</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="payments.html" class="sidebar-link">
+                            <span class="icon">💳</span>
+                            <span>Payments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="profile.html" class="sidebar-link">
+                            <span class="icon">👤</span>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html" class="sidebar-link">
+                            <span class="icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="sidebar-link" onclick="logout()">
+                    <span class="icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        ☰
+                    </button>
+                    <h1 class="topbar-title">Dashboard</h1>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="notification-btn">
+                        🔔
+                        <span class="notification-badge"></span>
+                    </button>
+
+                    <div class="user-menu">
+                        <button class="user-btn" id="user-btn">
+                            <div class="user-avatar" id="user-avatar">S</div>
+                            <span class="user-name" id="user-name">Student</span>
+                        </button>
+
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="profile.html">
+                                👤 My Profile
+                            </a>
+                            <a href="settings.html">
+                                ⚙️ Settings
+                            </a>
+                            <a href="#" onclick="logout()">
+                                🚪 Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Welcome Message -->
+                <div class="content-header">
+                    <h2 class="content-title">Welcome, <span id="student-name">Student</span>! 👋</h2>
+                    <p class="content-subtitle">Continue your learning journey</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">📚</div>
+                        <div class="stat-info">
+                            <h3 id="enrolled-count">0</h3>
+                            <p>Enrolled Courses</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">✅</div>
+                        <div class="stat-info">
+                            <h3 id="completed-count">0</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">📝</div>
+                        <div class="stat-info">
+                            <h3 id="assignments-count">0</h3>
+                            <p>Assignments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">🏆</div>
+                        <div class="stat-info">
+                            <h3 id="certificates-count">0</h3>
+                            <p>Certificates</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Courses -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h3 class="section-title">My Courses</h3>
+                        <a href="my-courses.html" class="view-all">View All →</a>
+                    </div>
+
+                    <div class="my-courses" id="my-courses">
+                        <div class="loading-state">Loading your courses…</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="dashboard-section">
+                    <div class="section-header"><h3 class="section-title">Recent Activity</h3></div>
+                    <div class="activity-list" id="recent-activity"><div class="loading-state">Loading…</div></div>
+                </div>
+
+                <!-- Upcoming Deadlines -->
+                <div class="dashboard-section">
+                    <div class="section-header"><h3 class="section-title">Upcoming Deadlines</h3></div>
+                    <div class="deadline-list" id="upcoming-deadlines"><div class="loading-state">Loading…</div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/error-reporter.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/native-bridge.js"></script>
+</body>
+</html>

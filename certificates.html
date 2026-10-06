@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Certificates - KBOA</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="assets/images/logo.png" alt="KBOA">
+                </div>
+                <span class="sidebar-title">KBOA</span>
+                <button class="sidebar-close" id="sidebar-close">✕</button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span><span>Dashboard</span></a></li>
+                    <li><a href="my-courses.html" class="sidebar-link"><span class="icon">📚</span><span>My Courses</span></a></li>
+                    <li><a href="certificates.html" class="sidebar-link active"><span class="icon">🏆</span><span>Certificates</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menu-toggle">☰</button>
+                    <h1 class="topbar-title">My Certificates</h1>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="content-header">
+                    <h2 class="content-title">🏆 My Certificates</h2>
+                    <p class="content-subtitle">View and download your earned certificates</p>
+                </div>
+
+                <!-- Certificate Display Container -->
+                <div id="certificate-container" style="margin-bottom: 30px;"></div>
+
+                <!-- Certificates List -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h3 class="section-title">All Certificates</h3>
+                    </div>
+                    <div id="certificates-list">
+                        <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                            <p style="font-size: 3rem; margin-bottom: 15px;">🏆</p>
+                            <h3>Loading certificates...</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/certificates/certificate-generator.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        // Load certificates on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            auth.onAuthStateChanged(async function(user) {
+                if (user) {
+                    const certificates = await KBOA.getMyCertificates(user.uid);
+                    displayCertificatesList(certificates);
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
