@@ -1,0 +1,15 @@
+const fs=require('fs'); const path=require('path');
+const root=path.resolve(__dirname,'..');
+const auth=fs.readFileSync(path.join(root,'js/auth.js'),'utf8');
+const settings=fs.readFileSync(path.join(root,'admin/settings.html'),'utf8');
+const fn=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');
+const bootstrap=fs.readFileSync(path.join(root,'scripts/bootstrap-admin.js'),'utf8');
+const assert=(c,m)=>{if(!c)throw new Error(m)};
+assert(auth.includes("getIdTokenResult(true)"),'Login must refresh Firebase claims before role redirect.');
+assert(auth.includes("claimRole || profile.role"),'Role redirect must support custom claims/profile role.');
+assert(settings.includes("adminCreateUser"),'Settings Add Admin must call the server function.');
+assert(!settings.includes("alert('✅ Admin created!')"),'Fake admin-created alert must be removed.');
+assert(fn.includes("password.length < 12") && fn.includes("adminCreateUser"),'Admin-created accounts must use the production password policy.');
+assert(bootstrap.includes('An admin already exists'),'Bootstrap must be first-admin only.');
+assert(bootstrap.includes('GOOGLE_APPLICATION_CREDENTIALS'),'Bootstrap must use server credentials, never client secrets.');
+console.log('ADMIN AUTH REGRESSION PASS');

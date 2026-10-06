@@ -1,0 +1,18 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const root = path.resolve(__dirname, '..');
+const auth = fs.readFileSync(path.join(root, 'js/auth.js'), 'utf8');
+const instructor = fs.readFileSync(path.join(root, 'instructor/js/instructor-data.js'), 'utf8');
+const teachers = fs.readFileSync(path.join(root, 'admin/teachers.html'), 'utf8');
+const functions = fs.readFileSync(path.join(root, 'functions/index.js'), 'utf8');
+assert(auth.includes("user.getIdTokenResult(true)"), 'login must refresh custom claims');
+assert(auth.includes("role === 'instructor'"), 'login must route instructor role');
+assert(auth.includes("profile.status !== 'active'"), 'inactive instructor must not enter portal');
+assert(instructor.includes("status !== 'active'"), 'instructor portal must enforce active status');
+assert(instructor.includes("await auth.signOut()"), 'inactive instructor must be signed out');
+assert(teachers.includes('minlength="12"'), 'teacher password UI must enforce 12 chars');
+assert(teachers.includes("pass.length < 12"), 'teacher creation must enforce password policy');
+assert(functions.includes("role, status: 'active'"), 'admin-created instructor must have explicit status');
+assert(functions.includes('await setRoleAndPermissions(user.uid, role, [])'), 'admin-created instructor must receive claims');
+console.log('Phase 20 instructor auth regression: PASS');
