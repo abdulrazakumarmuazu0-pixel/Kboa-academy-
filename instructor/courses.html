@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructor Dashboard - KBOA Instructor</title>
+    <title>My Courses - KBOA Instructor</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
     .admin-filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
@@ -42,46 +42,30 @@
     <div class="dashboard">
         <aside class="sidebar" id="sidebar">
     <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Instructor</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
-    <nav class="sidebar-nav"><ul><li><a href="dashboard.html" class="sidebar-link active"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>My Courses</span></a></li><li><a href="create-course.html" class="sidebar-link"><span class="icon">➕</span><span>Create Course</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>My Students</span></a></li><li><a href="assignments.html" class="sidebar-link"><span class="icon">📝</span><span>Assignments</span></a></li><li><a href="quizzes.html" class="sidebar-link"><span class="icon">🧠</span><span>Quizzes</span></a></li><li><a href="grades.html" class="sidebar-link"><span class="icon">📊</span><span>Grades</span></a></li><li><a href="earnings.html" class="sidebar-link"><span class="icon">💰</span><span>Earnings</span></a></li></ul></nav>
+    <nav class="sidebar-nav"><ul><li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="courses.html" class="sidebar-link active"><span class="icon">📚</span><span>My Courses</span></a></li><li><a href="create-course.html" class="sidebar-link"><span class="icon">➕</span><span>Create Course</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>My Students</span></a></li><li><a href="assignments.html" class="sidebar-link"><span class="icon">📝</span><span>Assignments</span></a></li><li><a href="quizzes.html" class="sidebar-link"><span class="icon">🧠</span><span>Quizzes</span></a></li><li><a href="grades.html" class="sidebar-link"><span class="icon">📊</span><span>Grades</span></a></li><li><a href="earnings.html" class="sidebar-link"><span class="icon">💰</span><span>Earnings</span></a></li></ul></nav>
     <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
 </aside>
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <main class="main-content">
             <header class="topbar">
-                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Instructor Dashboard</h1></div>
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">My Courses</h1></div>
                 <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#1e40af;" id="tb-avatar">I</div><span class="user-name" id="tb-name">Instructor</span></button></div></div>
             </header>
             <div class="content" style="padding-top:25px;">
-<div class="content-header" style="margin-bottom:25px;">
-    <h2 class="content-title">Welcome, <span id="instr-name">Instructor</span>! 👋</h2>
-    <p class="content-subtitle">Your teaching at a glance — live from Firestore</p>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
+    <div><h2 class="content-title">📚 My Courses</h2><p class="content-subtitle">Create, edit & track your courses</p></div>
+    <a href="create-course.html" class="btn btn-primary">+ Create New Course</a>
 </div>
 
-<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:25px;">
-    <div class="stat-card"><div class="stat-icon blue">📚</div><div class="stat-info"><h3 id="s-courses">—</h3><p>My Courses</p></div></div>
-    <div class="stat-card"><div class="stat-icon green">👨‍🎓</div><div class="stat-info"><h3 id="s-students">—</h3><p>Total Students</p></div></div>
-    <div class="stat-card"><div class="stat-icon orange">📝</div><div class="stat-info"><h3 id="s-grade">—</h3><p>To Grade</p></div></div>
-    <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="s-earn">—</h3><p>Earnings (net)</p></div></div>
+<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px;">
+    <div class="stat-card"><div class="stat-icon blue">📚</div><div class="stat-info"><h3 id="c-total">—</h3><p>Courses</p></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><h3 id="c-pub">—</h3><p>Published</p></div></div>
+    <div class="stat-card"><div class="stat-icon orange">👨‍🎓</div><div class="stat-info"><h3 id="c-students">—</h3><p>Students</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="c-rev">—</h3><p>Revenue</p></div></div>
 </div>
 
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;">
-    <h3 style="font-weight:700;margin-bottom:16px;">⚡ Quick Actions</h3>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="create-course.html" class="btn btn-primary">+ Create Course</a>
-        <a href="assignments.html" class="btn btn-outline">📝 New Assignment</a>
-        <a href="quizzes.html" class="btn btn-outline">🧠 New Quiz</a>
-        <a href="live-classes.html" class="btn btn-outline" onclick="event.preventDefault();alert('Schedule from your course page or ask admin.')">🎥 Schedule Live Class</a>
-    </div>
-</div>
-
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h3 style="font-weight:700;">📚 My Courses</h3>
-        <a href="courses.html" class="btn btn-sm btn-outline">Manage All →</a>
-    </div>
-    <div id="dash-courses" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
-        <p style="color:var(--gray-500);">⏳ Loading…</p>
-    </div>
+<div id="course-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;">
+    <p style="color:var(--gray-500);">⏳ Loading…</p>
 </div></div>
         </main>
     </div>
@@ -90,7 +74,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
-    <script src="../js/error-reporter.js"></script>
     <script src="js/instructor-data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -113,46 +96,63 @@
             return '<span class="status-badge" style="background:'+c[0]+';color:'+c[1]+'">'+esc(s||'—')+'</span>';}
     </script>
     <script>
-var MY_COURSES = [];
+var MY = [];
 document.addEventListener('DOMContentLoaded', async function() {
     var user = await Instr.requireInstructor();
-    var u = await Instr.studentInfo(user.uid);
-    document.getElementById('instr-name').textContent = u.fullName || 'Instructor';
-    document.getElementById('tb-name').textContent = u.fullName || 'Instructor';
-    document.getElementById('tb-avatar').textContent = initials(u.fullName);
+    load(user.uid);
+});
 
-    var summary = await Instr.getDashboardSummary(user.uid);
-    MY_COURSES = await Instr.getMyCourses(user.uid);
-    document.getElementById('s-courses').textContent = summary.courseCount;
-    document.getElementById('s-students').textContent = summary.enrollmentCount;
+async function load(uid) {
+    MY = await Instr.getMyCourses(uid);
+    document.getElementById('c-total').textContent = MY.length;
+    document.getElementById('c-pub').textContent = MY.filter(function(c){return c.status==='published';}).length;
+    document.getElementById('c-students').textContent = MY.reduce(function(s,c){return s+(c.studentCount||0);},0);
+    var earnings = await Instr.getEarnings(MY.map(function(c){return c.id;}));
+    document.getElementById('c-rev').textContent = '₦' + earnings.gross.toLocaleString();
 
-    var courseIds = MY_COURSES.map(function(c){return c.id;});
-    var assignments = await Instr.getAssignmentsForCourses(courseIds);
-    document.getElementById('s-grade').textContent = assignments.reduce(function(s,a){return s+(a.pendingGrading||0);},0);
-
-    var earnings = await Instr.getEarnings(courseIds);
-    document.getElementById('s-earn').textContent = '₦' + earnings.net.toLocaleString();
-
-    var box = document.getElementById('dash-courses');
-    if (!MY_COURSES.length) {
-        box.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-500);">'
-            + '<div style="font-size:2.5rem;margin-bottom:10px;">📚</div>'
-            + '<p>No courses yet. Create your first course!</p>'
-            + '<a href="create-course.html" class="btn btn-primary" style="margin-top:14px;">+ Create Course</a></div>';
+    var grid = document.getElementById('course-grid');
+    if (!MY.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--gray-500);">'
+            + '<div style="font-size:3rem;margin-bottom:12px;">📚</div><h3>No courses yet</h3>'
+            + '<a href="create-course.html" class="btn btn-primary" style="margin-top:14px;">+ Create Your First Course</a></div>';
         return;
     }
-    box.innerHTML = MY_COURSES.map(function(c) {
+    grid.innerHTML = MY.map(function(c) {
         var st = c.status || 'draft';
-        return '<div style="border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;background:white;">'
-        + '<img src="../assets/images/course-default.jpg" style="width:100%;height:110px;object-fit:cover;" alt="">'
-        + '<div style="padding:16px;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">'
-        + '<strong style="font-size:0.95rem;">'+esc(c.title)+'</strong>'+statusBadge(st)+'</div>'
-        + '<p style="font-size:0.82rem;color:var(--gray-500);margin-bottom:10px;">👨‍🎓 '+(c.studentCount||0)+' students • ₦'+Number(c.price||0).toLocaleString()+'</p>'
-        + '<a href="create-course.html?id='+c.id+'" class="btn btn-sm btn-outline" style="width:100%;">✏️ '+(st==='draft'?'Continue Building':'Edit Content')+'</a>'
+        var lessonCount = (c.modules||[]).reduce(function(s,m){return s+((m.lessons||[]).length);},0);
+        var actions = '<a href="create-course.html?id='+c.id+'" class="btn btn-sm btn-outline" style="flex:1;">✏️ Edit</a>';
+        if (st === 'draft' && lessonCount > 0) actions += '<button class="btn btn-sm btn-primary" style="flex:1;" onclick="submitForReview(\''+c.id+'\')">🚀 Submit</button>';
+        if (st === 'published') actions += '<button class="btn btn-sm btn-danger" onclick="delCourse(\''+c.id+'\',\''+esc(c.title)+'\')">🗑️</button>';
+        if (st === 'archived') actions += '<button class="btn btn-sm btn-primary" onclick="publishBack(\''+c.id+'\')">↩️ Republish</button>';
+        return '<div style="background:white;border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-100);">'
+        + '<img src="../assets/images/course-default.jpg" style="width:100%;height:150px;object-fit:cover;" alt="">'
+        + '<div style="padding:20px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">'
+        + '<h3 style="font-weight:700;">'+esc(c.title)+'</h3>'+statusBadge(st)+'</div>'
+        + '<p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:12px;">'+(c.modules||[]).length+' modules • '+lessonCount+' lessons • '+(c.duration||'')+'</p>'
+        + '<div style="display:flex;gap:14px;font-size:0.85rem;color:var(--gray-600);margin-bottom:14px;">'
+        + '<span>👨‍🎓 '+(c.studentCount||0)+' students</span>'
+        + '<span>💰 ₦'+Number(c.price||0).toLocaleString()+'</span></div>'
+        + '<div style="display:flex;gap:8px;">'+actions+'</div>'
+        + (c.reviewNote ? '<p style="margin-top:10px;font-size:0.8rem;color:#92400e;background:#fef3c7;padding:8px 12px;border-radius:8px;">📝 Admin note: '+esc(c.reviewNote)+'</p>' : '')
         + '</div></div>';
     }).join('');
-});
+}
+
+async function submitForReview(id) {
+    if (!confirm('Submit this course for admin review? It goes live after approval.')) return;
+    await Instr.saveCourse({ status: 'pending' }, id);
+    load(auth.currentUser.uid);
+}
+async function publishBack(id) {
+    await Instr.saveCourse({ status: 'published' }, id);
+    load(auth.currentUser.uid);
+}
+async function delCourse(id, title) {
+    if (!confirm('⚠️ Delete "'+title+'" permanently?')) return;
+    await Instr.removeCourse(id);
+    load(auth.currentUser.uid);
+}
 </script>
 </body>
 </html>

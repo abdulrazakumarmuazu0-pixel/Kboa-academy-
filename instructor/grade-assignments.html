@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructor Dashboard - KBOA Instructor</title>
+    <title>Grade Submissions - KBOA Instructor</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
     .admin-filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
@@ -42,47 +42,40 @@
     <div class="dashboard">
         <aside class="sidebar" id="sidebar">
     <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Instructor</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
-    <nav class="sidebar-nav"><ul><li><a href="dashboard.html" class="sidebar-link active"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>My Courses</span></a></li><li><a href="create-course.html" class="sidebar-link"><span class="icon">➕</span><span>Create Course</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>My Students</span></a></li><li><a href="assignments.html" class="sidebar-link"><span class="icon">📝</span><span>Assignments</span></a></li><li><a href="quizzes.html" class="sidebar-link"><span class="icon">🧠</span><span>Quizzes</span></a></li><li><a href="grades.html" class="sidebar-link"><span class="icon">📊</span><span>Grades</span></a></li><li><a href="earnings.html" class="sidebar-link"><span class="icon">💰</span><span>Earnings</span></a></li></ul></nav>
+    <nav class="sidebar-nav"><ul><li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>My Courses</span></a></li><li><a href="create-course.html" class="sidebar-link"><span class="icon">➕</span><span>Create Course</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>My Students</span></a></li><li><a href="assignments.html" class="sidebar-link active"><span class="icon">📝</span><span>Assignments</span></a></li><li><a href="quizzes.html" class="sidebar-link"><span class="icon">🧠</span><span>Quizzes</span></a></li><li><a href="grades.html" class="sidebar-link"><span class="icon">📊</span><span>Grades</span></a></li><li><a href="earnings.html" class="sidebar-link"><span class="icon">💰</span><span>Earnings</span></a></li></ul></nav>
     <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
 </aside>
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <main class="main-content">
             <header class="topbar">
-                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Instructor Dashboard</h1></div>
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Grade Submissions</h1></div>
                 <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#1e40af;" id="tb-avatar">I</div><span class="user-name" id="tb-name">Instructor</span></button></div></div>
             </header>
             <div class="content" style="padding-top:25px;">
-<div class="content-header" style="margin-bottom:25px;">
-    <h2 class="content-title">Welcome, <span id="instr-name">Instructor</span>! 👋</h2>
-    <p class="content-subtitle">Your teaching at a glance — live from Firestore</p>
+<div style="margin-bottom:20px;">
+    <a href="assignments.html" class="btn btn-outline btn-sm">← Back to Assignments</a>
+</div>
+<div id="assign-info" style="background:white;border-radius:14px;padding:20px;box-shadow:var(--shadow-sm);margin-bottom:20px;">
+    <h3 style="font-weight:700;" id="a-title">⏳ Loading…</h3>
+    <p style="font-size:0.9rem;color:var(--gray-600);margin-top:6px;" id="a-meta"></p>
 </div>
 
-<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:25px;">
-    <div class="stat-card"><div class="stat-icon blue">📚</div><div class="stat-info"><h3 id="s-courses">—</h3><p>My Courses</p></div></div>
-    <div class="stat-card"><div class="stat-icon green">👨‍🎓</div><div class="stat-info"><h3 id="s-students">—</h3><p>Total Students</p></div></div>
-    <div class="stat-card"><div class="stat-icon orange">📝</div><div class="stat-info"><h3 id="s-grade">—</h3><p>To Grade</p></div></div>
-    <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="s-earn">—</h3><p>Earnings (net)</p></div></div>
-</div>
-
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;">
-    <h3 style="font-weight:700;margin-bottom:16px;">⚡ Quick Actions</h3>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="create-course.html" class="btn btn-primary">+ Create Course</a>
-        <a href="assignments.html" class="btn btn-outline">📝 New Assignment</a>
-        <a href="quizzes.html" class="btn btn-outline">🧠 New Quiz</a>
-        <a href="live-classes.html" class="btn btn-outline" onclick="event.preventDefault();alert('Schedule from your course page or ask admin.')">🎥 Schedule Live Class</a>
-    </div>
-</div>
-
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h3 style="font-weight:700;">📚 My Courses</h3>
-        <a href="courses.html" class="btn btn-sm btn-outline">Manage All →</a>
-    </div>
-    <div id="dash-courses" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
-        <p style="color:var(--gray-500);">⏳ Loading…</p>
-    </div>
+<div class="data-table-card"><div class="table-scroll">
+<table class="data-table"><thead><tr>
+    <th>Student</th><th>Submitted</th><th>File</th><th>Status</th><th>Score</th><th>Actions</th>
+</tr></thead><tbody id="tbody"><tr class="empty-row"><td colspan="6">⏳ Loading…</td></tr></tbody></table>
 </div></div>
+
+<div class="modal-overlay" id="grade-modal"><div class="modal-content">
+    <div class="modal-header"><h2>✅ Grade Submission</h2><button class="modal-close" onclick="closeModal('grade-modal')">✕</button></div>
+    <div class="modal-body">
+        <p style="margin-bottom:16px;"><strong>Student:</strong> <span id="g-student"></span><br><strong>Notes:</strong> <span id="g-notes"></span></p>
+        <div id="g-file"></div>
+        <div class="form-group" style="margin-top:16px;"><label class="form-label">Score (out of <span id="g-max">100</span>) *</label><input class="form-control" id="g-score" type="number"></div>
+        <div class="form-group"><label class="form-label">Feedback *</label><textarea class="form-control" id="g-feedback" rows="4" placeholder="Constructive feedback for the student…"></textarea></div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="submitGrade()">✅ Submit Grade</button>
+    </div>
+</div></div></div>
         </main>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -90,7 +83,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
-    <script src="../js/error-reporter.js"></script>
     <script src="js/instructor-data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -113,46 +105,73 @@
             return '<span class="status-badge" style="background:'+c[0]+';color:'+c[1]+'">'+esc(s||'—')+'</span>';}
     </script>
     <script>
-var MY_COURSES = [];
+var ASSIGNMENT_ID = null, ASSIGNMENT = null, SUBS = [], CURRENT = null;
 document.addEventListener('DOMContentLoaded', async function() {
-    var user = await Instr.requireInstructor();
-    var u = await Instr.studentInfo(user.uid);
-    document.getElementById('instr-name').textContent = u.fullName || 'Instructor';
-    document.getElementById('tb-name').textContent = u.fullName || 'Instructor';
-    document.getElementById('tb-avatar').textContent = initials(u.fullName);
+    await Instr.requireInstructor();
+    ASSIGNMENT_ID = new URLSearchParams(location.search).get('assignmentId');
+    if (!ASSIGNMENT_ID) { location.href = 'assignments.html'; return; }
 
-    var summary = await Instr.getDashboardSummary(user.uid);
-    MY_COURSES = await Instr.getMyCourses(user.uid);
-    document.getElementById('s-courses').textContent = summary.courseCount;
-    document.getElementById('s-students').textContent = summary.enrollmentCount;
-
-    var courseIds = MY_COURSES.map(function(c){return c.id;});
-    var assignments = await Instr.getAssignmentsForCourses(courseIds);
-    document.getElementById('s-grade').textContent = assignments.reduce(function(s,a){return s+(a.pendingGrading||0);},0);
-
-    var earnings = await Instr.getEarnings(courseIds);
-    document.getElementById('s-earn').textContent = '₦' + earnings.net.toLocaleString();
-
-    var box = document.getElementById('dash-courses');
-    if (!MY_COURSES.length) {
-        box.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-500);">'
-            + '<div style="font-size:2.5rem;margin-bottom:10px;">📚</div>'
-            + '<p>No courses yet. Create your first course!</p>'
-            + '<a href="create-course.html" class="btn btn-primary" style="margin-top:14px;">+ Create Course</a></div>';
-        return;
-    }
-    box.innerHTML = MY_COURSES.map(function(c) {
-        var st = c.status || 'draft';
-        return '<div style="border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;background:white;">'
-        + '<img src="../assets/images/course-default.jpg" style="width:100%;height:110px;object-fit:cover;" alt="">'
-        + '<div style="padding:16px;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">'
-        + '<strong style="font-size:0.95rem;">'+esc(c.title)+'</strong>'+statusBadge(st)+'</div>'
-        + '<p style="font-size:0.82rem;color:var(--gray-500);margin-bottom:10px;">👨‍🎓 '+(c.studentCount||0)+' students • ₦'+Number(c.price||0).toLocaleString()+'</p>'
-        + '<a href="create-course.html?id='+c.id+'" class="btn btn-sm btn-outline" style="width:100%;">✏️ '+(st==='draft'?'Continue Building':'Edit Content')+'</a>'
-        + '</div></div>';
-    }).join('');
+    var snap = await db.collection('assignments').doc(ASSIGNMENT_ID).get();
+    if (!snap.exists) { alert('Assignment not found.'); location.href = 'assignments.html'; return; }
+    ASSIGNMENT = snap.data();
+    document.getElementById('a-title').textContent = '📝 ' + ASSIGNMENT.title;
+    document.getElementById('a-meta').textContent = 'Due: ' + fmtDate(ASSIGNMENT.dueDate) + ' • ' + (ASSIGNMENT.points||100) + ' points';
+    document.getElementById('g-max').textContent = ASSIGNMENT.points || 100;
+    load();
 });
+
+async function load() {
+    SUBS = await Instr.getSubmissions(ASSIGNMENT_ID);
+    var tb = document.getElementById('tbody');
+    if (!SUBS.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="6">No submissions yet.</td></tr>'; return; }
+    tb.innerHTML = SUBS.map(function(s) {
+        return '<tr>'
+        + '<td><div class="user-cell"><div class="user-avatar-sm" style="background:'+avColor(s.studentId)+'">'+initials(s.studentName)+'</div><div><div style="font-weight:600;">'+esc(s.studentName)+'</div><div style="font-size:0.78rem;color:var(--gray-500);">'+esc(s.notes||'')+'</div></div></div></td>'
+        + '<td>'+fmtDate(s.submittedAt)+'</td>'
+        + '<td>'+(s.fileUrl?'<a href="'+s.fileUrl+'" target="_blank" class="btn btn-sm btn-outline">📎 Download</a>':(s.fileName?esc(s.fileName):'—'))+'</td>'
+        + '<td>'+statusBadge(s.status||'submitted')+(s.total?'<div style="font-size:0.8rem;margin-top:4px;"><strong>'+s.total+'/'+(s.maxPoints||100)+'</strong></div>':'')+'</td>'
+        + '<td>'+(s.total||'—')+'</td>'
+        + '<td><div class="action-btns">'
+        + ((s.status||'submitted')==='submitted'
+            ? '<button class="action-btn ok" onclick="openGrade(\''+s.id+'\')" title="Grade">✅</button>'
+            : '<span style="font-size:0.8rem;color:#059669;font-weight:700;">Graded ✓</span>')
+        + '</div></td></tr>';
+    }).join('');
+}
+
+function openGrade(subId) {
+    CURRENT = SUBS.find(function(s){return s.id===subId;});
+    document.getElementById('g-student').textContent = CURRENT.studentName;
+    document.getElementById('g-notes').textContent = CURRENT.notes || 'None';
+    document.getElementById('g-file').innerHTML = CURRENT.fileUrl
+        ? '<a href="'+CURRENT.fileUrl+'" target="_blank" class="btn btn-outline btn-sm">📎 Download Submission</a>' : '';
+    document.getElementById('g-score').value = '';
+    document.getElementById('g-feedback').value = '';
+    document.getElementById('grade-modal').classList.add('show');
+}
+
+async function submitGrade() {
+    var score = parseInt(document.getElementById('g-score').value);
+    var feedback = document.getElementById('g-feedback').value.trim();
+    var max = ASSIGNMENT.points || 100;
+    if (isNaN(score) || score < 0 || score > max) { alert('Score must be 0–' + max); return; }
+    if (!feedback) { alert('Feedback is required.'); return; }
+    await Instr.saveGrade({
+        submissionId: CURRENT.id,
+        studentId: CURRENT.studentId,
+        courseId: ASSIGNMENT.courseId,
+        assignmentId: ASSIGNMENT_ID,
+        assignmentTitle: ASSIGNMENT.title,
+        score: score, total: score, maxPoints: max,
+        feedback: feedback,
+        instructorId: auth.currentUser.uid
+    });
+    closeModal('grade-modal');
+    CURRENT.status = 'graded';
+    CURRENT.total = score;
+    load();
+    alert('✅ Grade submitted! Student has been notified.');
+}
 </script>
 </body>
 </html>

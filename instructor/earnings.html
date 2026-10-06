@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructor Dashboard - KBOA Instructor</title>
+    <title>My Earnings - KBOA Instructor</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
     .admin-filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
@@ -42,47 +42,41 @@
     <div class="dashboard">
         <aside class="sidebar" id="sidebar">
     <div class="sidebar-header"><div class="sidebar-logo"><img src="../assets/images/logo.png" alt="KBOA"></div><span class="sidebar-title">Instructor</span><button class="sidebar-close" id="sidebar-close">✕</button></div>
-    <nav class="sidebar-nav"><ul><li><a href="dashboard.html" class="sidebar-link active"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>My Courses</span></a></li><li><a href="create-course.html" class="sidebar-link"><span class="icon">➕</span><span>Create Course</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>My Students</span></a></li><li><a href="assignments.html" class="sidebar-link"><span class="icon">📝</span><span>Assignments</span></a></li><li><a href="quizzes.html" class="sidebar-link"><span class="icon">🧠</span><span>Quizzes</span></a></li><li><a href="grades.html" class="sidebar-link"><span class="icon">📊</span><span>Grades</span></a></li><li><a href="earnings.html" class="sidebar-link"><span class="icon">💰</span><span>Earnings</span></a></li></ul></nav>
+    <nav class="sidebar-nav"><ul><li><a href="dashboard.html" class="sidebar-link"><span class="icon">📊</span><span>Dashboard</span></a></li><li><a href="courses.html" class="sidebar-link"><span class="icon">📚</span><span>My Courses</span></a></li><li><a href="create-course.html" class="sidebar-link"><span class="icon">➕</span><span>Create Course</span></a></li><li><a href="students.html" class="sidebar-link"><span class="icon">👨‍🎓</span><span>My Students</span></a></li><li><a href="assignments.html" class="sidebar-link"><span class="icon">📝</span><span>Assignments</span></a></li><li><a href="quizzes.html" class="sidebar-link"><span class="icon">🧠</span><span>Quizzes</span></a></li><li><a href="grades.html" class="sidebar-link"><span class="icon">📊</span><span>Grades</span></a></li><li><a href="earnings.html" class="sidebar-link active"><span class="icon">💰</span><span>Earnings</span></a></li></ul></nav>
     <div class="sidebar-footer"><a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a></div>
 </aside>
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <main class="main-content">
             <header class="topbar">
-                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">Instructor Dashboard</h1></div>
+                <div class="topbar-left"><button class="menu-toggle" id="menu-toggle">☰</button><h1 class="topbar-title">My Earnings</h1></div>
                 <div class="topbar-right"><div class="user-menu"><button class="user-btn"><div class="user-avatar" style="background:#1e40af;" id="tb-avatar">I</div><span class="user-name" id="tb-name">Instructor</span></button></div></div>
             </header>
             <div class="content" style="padding-top:25px;">
-<div class="content-header" style="margin-bottom:25px;">
-    <h2 class="content-title">Welcome, <span id="instr-name">Instructor</span>! 👋</h2>
-    <p class="content-subtitle">Your teaching at a glance — live from Firestore</p>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
+    <div><h2 class="content-title">💰 My Earnings</h2><p class="content-subtitle">Real revenue from your course sales</p></div>
+    <button class="btn btn-outline" onclick="exportCSV()">📥 Statement</button>
 </div>
 
-<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:25px;">
-    <div class="stat-card"><div class="stat-icon blue">📚</div><div class="stat-info"><h3 id="s-courses">—</h3><p>My Courses</p></div></div>
-    <div class="stat-card"><div class="stat-icon green">👨‍🎓</div><div class="stat-info"><h3 id="s-students">—</h3><p>Total Students</p></div></div>
-    <div class="stat-card"><div class="stat-icon orange">📝</div><div class="stat-info"><h3 id="s-grade">—</h3><p>To Grade</p></div></div>
-    <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="s-earn">—</h3><p>Earnings (net)</p></div></div>
+<div class="stats-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px;">
+    <div class="stat-card"><div class="stat-icon green">💰</div><div class="stat-info"><h3 id="e-gross">—</h3><p>Gross Revenue</p></div></div>
+    <div class="stat-card"><div class="stat-icon blue">💸</div><div class="stat-info"><h3 id="e-fees">—</h3><p>Platform Fees (10%)</p></div></div>
+    <div class="stat-card"><div class="stat-icon orange">⏳</div><div class="stat-info"><h3 id="e-available">—</h3><p>Available Balance</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple">✅</div><div class="stat-info"><h3 id="e-paid">—</h3><p>Paid Out</p></div></div>
 </div>
 
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;">
-    <h3 style="font-weight:700;margin-bottom:16px;">⚡ Quick Actions</h3>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="create-course.html" class="btn btn-primary">+ Create Course</a>
-        <a href="assignments.html" class="btn btn-outline">📝 New Assignment</a>
-        <a href="quizzes.html" class="btn btn-outline">🧠 New Quiz</a>
-        <a href="live-classes.html" class="btn btn-outline" onclick="event.preventDefault();alert('Schedule from your course page or ask admin.')">🎥 Schedule Live Class</a>
-    </div>
-</div>
-
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h3 style="font-weight:700;">📚 My Courses</h3>
-        <a href="courses.html" class="btn btn-sm btn-outline">Manage All →</a>
-    </div>
-    <div id="dash-courses" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
-        <p style="color:var(--gray-500);">⏳ Loading…</p>
-    </div>
+<h3 style="margin-bottom:12px;">📚 Earnings by Course</h3>
+<div class="data-table-card" style="margin-bottom:25px;"><div class="table-scroll">
+<table class="data-table"><thead><tr>
+    <th>Course</th><th>Price</th><th>Students</th><th>Gross</th><th>Your Share (90%)</th>
+</tr></thead><tbody id="course-body"><tr class="empty-row"><td colspan="5">⏳ Loading…</td></tr></tbody></table>
 </div></div>
+
+<h3 style="margin-bottom:12px;">💸 Payout History</h3>
+<div class="data-table-card"><div class="table-scroll">
+<table class="data-table"><thead><tr>
+    <th>Payout ID</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th>
+</tr></thead><tbody id="payout-body"><tr class="empty-row"><td colspan="5">⏳ Loading…</td></tr></tbody></table>
+</div></div></div>
         </main>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -90,7 +84,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
-    <script src="../js/error-reporter.js"></script>
     <script src="js/instructor-data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -113,46 +106,42 @@
             return '<span class="status-badge" style="background:'+c[0]+';color:'+c[1]+'">'+esc(s||'—')+'</span>';}
     </script>
     <script>
-var MY_COURSES = [];
 document.addEventListener('DOMContentLoaded', async function() {
     var user = await Instr.requireInstructor();
-    var u = await Instr.studentInfo(user.uid);
-    document.getElementById('instr-name').textContent = u.fullName || 'Instructor';
-    document.getElementById('tb-name').textContent = u.fullName || 'Instructor';
-    document.getElementById('tb-avatar').textContent = initials(u.fullName);
+    var MY = await Instr.getMyCourses(user.uid);
+    var courseIds = MY.map(function(c){return c.id;});
 
-    var summary = await Instr.getDashboardSummary(user.uid);
-    MY_COURSES = await Instr.getMyCourses(user.uid);
-    document.getElementById('s-courses').textContent = summary.courseCount;
-    document.getElementById('s-students').textContent = summary.enrollmentCount;
+    var e = await Instr.getEarnings(courseIds);
+    document.getElementById('e-gross').textContent = '₦' + e.gross.toLocaleString();
+    document.getElementById('e-fees').textContent = '₦' + e.fees.toLocaleString();
+    document.getElementById('e-available').textContent = '₦' + e.available.toLocaleString();
+    document.getElementById('e-paid').textContent = '₦' + e.paidOut.toLocaleString();
 
-    var courseIds = MY_COURSES.map(function(c){return c.id;});
-    var assignments = await Instr.getAssignmentsForCourses(courseIds);
-    document.getElementById('s-grade').textContent = assignments.reduce(function(s,a){return s+(a.pendingGrading||0);},0);
+    var cb = document.getElementById('course-body');
+    cb.innerHTML = MY.length ? MY.map(function(c) {
+        var gross = e.byCourse[c.id] || 0;
+        return '<tr>'
+        + '<td><strong>'+esc(c.title)+'</strong></td>'
+        + '<td>'+(c.price>0?'₦'+Number(c.price).toLocaleString():'FREE')+'</td>'
+        + '<td>'+(c.studentCount||0)+'</td>'
+        + '<td>₦' + gross.toLocaleString() + '</td>'
+        + '<td><strong style="color:#059669;">₦' + Math.round(gross*0.9).toLocaleString() + '</strong></td></tr>';
+    }).join('') + '<tr style="background:var(--gray-50);font-weight:700;"><td colspan="3">TOTAL</td><td>₦'+e.gross.toLocaleString()+'</td><td style="color:#059669;">₦'+e.net.toLocaleString()+'</td></tr>'
+    : '<tr class="empty-row"><td colspan="5">No courses yet.</td></tr>';
 
-    var earnings = await Instr.getEarnings(courseIds);
-    document.getElementById('s-earn').textContent = '₦' + earnings.net.toLocaleString();
-
-    var box = document.getElementById('dash-courses');
-    if (!MY_COURSES.length) {
-        box.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-500);">'
-            + '<div style="font-size:2.5rem;margin-bottom:10px;">📚</div>'
-            + '<p>No courses yet. Create your first course!</p>'
-            + '<a href="create-course.html" class="btn btn-primary" style="margin-top:14px;">+ Create Course</a></div>';
-        return;
-    }
-    box.innerHTML = MY_COURSES.map(function(c) {
-        var st = c.status || 'draft';
-        return '<div style="border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;background:white;">'
-        + '<img src="../assets/images/course-default.jpg" style="width:100%;height:110px;object-fit:cover;" alt="">'
-        + '<div style="padding:16px;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">'
-        + '<strong style="font-size:0.95rem;">'+esc(c.title)+'</strong>'+statusBadge(st)+'</div>'
-        + '<p style="font-size:0.82rem;color:var(--gray-500);margin-bottom:10px;">👨‍🎓 '+(c.studentCount||0)+' students • ₦'+Number(c.price||0).toLocaleString()+'</p>'
-        + '<a href="create-course.html?id='+c.id+'" class="btn btn-sm btn-outline" style="width:100%;">✏️ '+(st==='draft'?'Continue Building':'Edit Content')+'</a>'
-        + '</div></div>';
-    }).join('');
+    var psnap = await db.collection('payouts').where('instructorId', '==', user.uid).orderBy('createdAt','desc').get();
+    var pb = document.getElementById('payout-body');
+    pb.innerHTML = psnap.size ? psnap.docs.map(function(d) {
+        var p = d.data();
+        return '<tr><td style="font-family:monospace;font-size:0.82rem;">'+esc(p.payoutId||d.id)+'</td>'
+        + '<td><strong>₦'+(p.amount||0).toLocaleString()+'</strong></td>'
+        + '<td>'+esc(p.method||'Bank Transfer')+'</td>'
+        + '<td>'+fmtDate(p.createdAt)+'</td>'
+        + '<td>'+statusBadge(p.status||'paid')+'</td></tr>';
+    }).join('') : '<tr class="empty-row"><td colspan="5">No payouts yet. Payouts process monthly per admin settings.</td></tr>';
 });
+
+function exportCSV() { alert('📥 Full statement export is processed by admin each month.'); }
 </script>
 </body>
 </html>
