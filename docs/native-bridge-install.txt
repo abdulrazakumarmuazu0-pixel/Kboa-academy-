@@ -1,0 +1,13 @@
+// To enable Android native features, add this line to index.html
+// just before the closing </body> tag, after the other script tags:
+//
+//   <script src="js/native-bridge.js"></script>
+//
+// It auto-detects if running inside the Android app and enables:
+//   ✅ Push notifications (FCM)
+//   ✅ Offline video downloads
+//   ✅ Native share
+//   ✅ Offline/online banner
+//   ✅ Android back button handling
+//
+// In the browser it safely does nothing.

@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBOA — Production Seeder (Admin Only)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        body { background: var(--gradient-hero); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .seed-card { background: white; border-radius: 24px; padding: 40px; max-width: 560px; width: 100%; box-shadow: var(--sh-lg); }
+        .seed-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: var(--gray-50); margin-bottom: 8px; font-size: 0.95rem; }
+        .seed-item.done { background: #ecfdf5; color: #065f46; }
+        .seed-item.err { background: #fef2f2; color: #991b1b; }
+        #seed-btn { width: 100%; padding: 16px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+    <div class="seed-card">
+        <h1 style="font-family: var(--font-display); margin-bottom: 8px;">🌱 Production Seeder</h1>
+        <p style="color: var(--gray-500); margin-bottom: 24px;">Creates the initial courses & exam in your Firestore database. Run <strong>once</strong>, then <strong>delete this file</strong>.</p>
 
+        <div id="status-box" style="display:none; margin-bottom: 20px;">
+            <div class="seed-item" id="item-courses">📚 Publishing 3 courses…</div>
+            <div class="seed-item" id="item-exam">📝 Publishing Mathematics Final Exam…</div>
+        </div>
+
+        <div id="auth-check" style="display:none; text-align:center; padding: 30px; background: #fef3c7; border-radius: 12px; color: #92400e;">
+            ⏳ Checking admin access…
+        </div>
+
+        <button id="seed-btn" class="btn btn-primary btn-lg" onclick="runSeed()" disabled>🚀 Seed Production Data</button>
+        <p id="result-msg" style="text-align:center; margin-top: 16px; font-weight: 600;"></p>
+        <p style="text-align:center; margin-top: 20px; font-size: 0.85rem; color: var(--gray-400);">⚠️ Delete <code>docs/seed.html</code> from hosting after seeding</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script>
+        var isAdmin = false;
+
+        auth.onAuthStateChanged(async function(user) {
+            var box = document.getElementById('auth-check');
+            box.style.display = 'block';
+            if (!user) {
+                box.innerHTML = '❌ You must <a href="../login.html" style="color:#92400e;text-decoration:underline;">login</a> first.';
+                return;
+            }
+            var userDoc = await db.collection('users').doc(user.uid).get();
+            var role = userDoc.exists ? userDoc.data().role : null;
+            if (role !== 'admin') {
+                box.innerHTML = '⛔ Access denied. Only admins can seed data.<br><small>Set your role to "admin" in Firestore Console → users → your document.</small>';
+                return;
+            }
+            box.style.display = 'none';
+            isAdmin = true;
+            document.getElementById('seed-btn').disabled = false;
+        });
+
+        // ============ PRODUCTION CONTENT ============
+        var COURSES = [
+            {
+                title: 'AI & ChatGPT Mastery',
+                category: 'tech',
+                instructor: 'Ahmad Bello',
+                level: 'Beginner',
+                duration: '4 weeks',
+                price: 5000,
+                oldPrice: 10000,
+                badge: 'Popular',
+                status: 'published',
+                image: 'assets/images/course-ai.jpg',
+                description: 'Master AI tools and prompt engineering from scratch.',
+                modules: [
+                    { title: 'Module 1 — Introduction to AI', lessons: [
+                        { id: 'ai-m1-l1', title: 'What is Artificial Intelligence?', type: 'video', duration: '10:30', videoUrl: '', content: '<p>Welcome! In this lesson we explore the fundamentals of Artificial Intelligence.</p>' },
+                        { id: 'ai-m1-l2', title: 'History and Evolution of AI', type: 'video', duration: '12:45', videoUrl: '', content: '<p>The journey of AI from 1950 to today.</p>' },
+                        { id: 'ai-m1-l3', title: 'Introduction to ChatGPT', type: 'video', duration: '15:20', videoUrl: '', content: '<p>Discover ChatGPT and its capabilities.</p>' },
+                        { id: 'ai-m1-q', title: 'Module 1 Quiz', type: 'quiz', duration: '15 mins', questions: 10 }
+                    ]},
+                    { title: 'Module 2 — Prompt Engineering', lessons: [
+                        { id: 'ai-m2-l1', title: 'What is Prompt Engineering?', type: 'video', duration: '14:15', videoUrl: '', content: '<p>The art of crafting effective prompts.</p>' },
+                        { id: 'ai-m2-l2', title: 'Advanced Prompting Techniques', type: 'video', duration: '18:30', videoUrl: '', content: '<p>Master advanced techniques.</p>' },
+                        { id: 'ai-m2-a', title: 'Module 2 Assignment', type: 'assignment', duration: '1 hour' }
+                    ]}
+                ]
+            },
+            {
+                title: 'Microsoft Office Complete',
+                category: 'digital',
+                instructor: 'Fatima Hassan',
+                level: 'Beginner',
+                duration: '6 weeks',
+                price: 3500,
+                oldPrice: 7000,
+                badge: 'Best Seller',
+                status: 'published',
+                image: 'assets/images/course-office.jpg',
+                description: 'Word, Excel, PowerPoint — from basics to advanced.',
+                modules: []
+            },
+            {
+                title: 'Web Design Fundamentals',
+                category: 'tech',
+                instructor: 'Ibrahim Musa',
+                level: 'Intermediate',
+                duration: '8 weeks',
+                price: 7500,
+                oldPrice: 15000,
+                badge: 'New',
+                status: 'published',
+                image: 'assets/images/course-web.jpg',
+                description: 'HTML, CSS and responsive design for modern websites.',
+                modules: []
+            }
+        ];
+
+        var MATH_EXAM = {
+            title: 'Final Examination — Mathematics',
+            courseName: 'Mathematics',
+            courseId: '',
+            status: 'published',
+            durationMinutes: 60,
+            passMark: 70,
+            certPrefix: 'KBOA',
+            questions: [
+                { question: 'What is the value of x in the equation 2x + 6 = 14?', options: ['x = 3', 'x = 4', 'x = 5', 'x = 6'], correctAnswer: 1, explanation: '2x = 8, therefore x = 4' },
+                { question: 'What is 15% of 200?', options: ['20', '25', '30', '35'], correctAnswer: 2, explanation: '0.15 × 200 = 30' },
+                { question: 'Simplify: 3(x + 4) - 2(x - 3)', options: ['x + 6', 'x + 18', '5x + 6', '5x + 18'], correctAnswer: 1, explanation: '3x + 12 - 2x + 6 = x + 18' },
+                { question: 'Area of a circle with radius 7cm? (π = 22/7)', options: ['154 cm²', '144 cm²', '164 cm²', '174 cm²'], correctAnswer: 0, explanation: 'πr² = (22/7) × 49 = 154 cm²' },
+                { question: 'Third angle of triangle with 60° and 80°?', options: ['30°', '40°', '50°', '60°'], correctAnswer: 1, explanation: '180 - 140 = 40°' },
+                { question: 'Square root of 144?', options: ['10', '11', '12', '13'], correctAnswer: 2, explanation: '12 × 12 = 144' },
+                { question: 'Convert 0.75 to simplest fraction', options: ['3/4', '7/5', '75/100', '3/5'], correctAnswer: 0, explanation: '75/100 = 3/4' },
+                { question: 'Next: 2, 6, 12, 20, 30, …?', options: ['36', '40', '42', '44'], correctAnswer: 2, explanation: 'Differences: 4,6,8,10,12 → 30+12=42' },
+                { question: 'If 5x = 25, what is x²?', options: ['5', '10', '15', '25'], correctAnswer: 3, explanation: 'x = 5, x² = 25' },
+                { question: 'Perimeter of rectangle 12cm × 8cm?', options: ['20cm', '40cm', '60cm', '96cm'], correctAnswer: 1, explanation: '2(12+8) = 40cm' }
+            ]
+        };
+
+        async function runSeed() {
+            if (!isAdmin) return;
+            var btn = document.getElementById('seed-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Seeding…';
+            document.getElementById('status-box').style.display = 'block';
+
+            try {
+                // Seed courses
+                var itemC = document.getElementById('item-courses');
+                for (var course of COURSES) {
+                    var exists = await db.collection('courses').where('title', '==', course.title).limit(1).get();
+                    if (exists.empty) {
+                        await db.collection('courses').add(Object.assign({}, course, {
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }));
+                    }
+                }
+                itemC.className = 'seed-item done';
+                itemC.textContent = '✅ 3 courses published';
+
+                // Seed exam
+                var itemE = document.getElementById('item-exam');
+                var examExists = await db.collection('exams').where('title', '==', MATH_EXAM.title).limit(1).get();
+                if (examExists.empty) {
+                    await db.collection('exams').add(Object.assign({}, MATH_EXAM, {
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }));
+                }
+                itemE.className = 'seed-item done';
+                itemE.textContent = '✅ Mathematics Final Exam published (' + MATH_EXAM.questions.length + ' questions)';
+
+                btn.textContent = '✅ Seeding Complete';
+                document.getElementById('result-msg').textContent = '🎉 Done! Now DELETE docs/seed.html from your hosting.';
+                document.getElementById('result-msg').style.color = '#059669';
+            } catch (e) {
+                console.error(e);
+                btn.disabled = false;
+                btn.textContent = '❌ Failed — Try Again';
+                document.getElementById('result-msg').textContent = 'Error: ' + e.message;
+                document.getElementById('result-msg').style.color = '#dc2626';
+            }
+        }
+    </script>
+</body>
+</html>
