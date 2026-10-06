@@ -1,0 +1,77 @@
+// ============================================
+// KBOA Android App — Gradle Configuration
+// Place these in android/app/build.gradle
+// ============================================
+
+/*
+android {
+    compileSdkVersion 34
+    defaultConfig {
+        applicationId "ng.edu.kboa.app"
+        minSdkVersion 24        // Android 7.0+ (covers 95%+ of Nigerian devices)
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0.0"
+
+        // Firebase Cloud Messaging
+        // Add your google-services.json to android/app/ first
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            // Sign with your release keystore (see PLAY_STORE_GUIDE.md)
+            signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+}
+
+// Signing config — create keystore first:
+// keytool -genkey -v -keystore kboa-release.keystore -alias kboa -keyalg RSA -keysize 2048 -validity 10000
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+}
+*/
+
+// Dependencies (android/app/build.gradle):
+/*
+dependencies {
+    implementation "androidx.core:core-splashscreen:1.0.1"
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+
+    // Video playback
+    implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
+}
+apply plugin: 'com.google.gms.google-services'
+*/
+
+// Root build.gradle:
+/*
+buildscript {
+    dependencies {
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
+}
+*/
